@@ -3,12 +3,10 @@ import { View, FlatList, Animated, Text, TouchableOpacity, Dimensions, Image, Sa
 import chickenOnboardingImagesData from '../components/chickenOnboardingImagesData';
 import { useNavigation } from '@react-navigation/native';
 
-const fontKronaOneRegular = 'KronaOne-Regular';
-
 const fontRammetoOneRegular = 'RammettoOne-Regular';
 const fontRanchersRegular = 'Ranchers-Regular';
 
-const ChickenOnboardingRunScreen = () => {
+const MathOnboardingScreen = () => {
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [thisNathIndexSlide, setThisNathIndexSlide] = useState(0);
   const mathRefSlides = useRef(null);
@@ -25,9 +23,9 @@ const ChickenOnboardingRunScreen = () => {
     };
   }, []);
 
-  const viewableItemsChanged = useRef(({ viewableMathItems }) => {
-    if (viewableMathItems && viewableMathItems.length > 0) {
-      setThisNathIndexSlide(viewableMathItems[0].index);
+  const viewableItemsChanged = useRef(({ viewableItems }) => {
+    if (viewableItems && viewableItems.length > 0) {
+      setThisNathIndexSlide(viewableItems[0].index);
     }
   }).current;
 
@@ -35,7 +33,7 @@ const ChickenOnboardingRunScreen = () => {
 
   const handleNextMathSlide = () => {
     if (thisNathIndexSlide >= chickenOnboardingImagesData.length - 1) {
-      navigation.replace('ChickenRunHomeScreen');
+      navigation.replace('MathWithHomeScreen');
     } else {
       mathRefSlides.current.scrollToIndex({ index: thisNathIndexSlide + 1 });
     }
@@ -155,4 +153,4 @@ const ChickenOnboardingRunScreen = () => {
   );
 };
 
-export default ChickenOnboardingRunScreen;
+export default MathOnboardingScreen;

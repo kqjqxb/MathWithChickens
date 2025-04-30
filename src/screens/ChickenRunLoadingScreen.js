@@ -50,7 +50,7 @@ const ChickenRunLoadingScreen = () => {
   useEffect(() => {
     if (initializationChickenLoadingCompleted) {
       const timer = setTimeout(() => {
-        const destination = isChickenOnbWasVisibledRunYet ? 'ChickenRunOnboardingScreen' : 'ChickenRunHomeScreen';
+        const destination = isChickenOnbWasVisibledRunYet ? 'ChickenRunOnboardingScreen' : 'MathWithHomeScreen';
         navigation.replace(destination);
       }, 1000);
       return () => clearTimeout(timer);

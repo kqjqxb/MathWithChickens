@@ -15,9 +15,35 @@ import ChickenSkinsScreen from './ChickenSkinsScreen';
 import ChickenQuizScreen from './ChickenQuizScreen';
 import ChickenRunGameScreen from './ChickenRunGameScreen';
 
-const fontKronaOneRegular = 'KronaOne-Regular';
 
-const ChickenRunHomeScreen = () => {
+const fontRammetoOneRegular = 'RammettoOne-Regular';
+const fontRanchersRegular = 'Ranchers-Regular';
+
+const mainYellowButtons = [
+  {
+    id: 1,
+    text: 'Math Quiz',
+    image: require('../assets/images/mathQuizButton.png'),
+  },
+  {
+    id: 2,
+    text: 'Play Game',
+    image: require('../assets/images/mathPlayButton.png'),
+  },
+  {
+    id: 3,
+    text: 'Achievments',
+    image: require('../assets/images/mathAchievmentsButton.png'),
+  },
+  {
+    id: 4,
+    text: 'Settings',
+    image: require('../assets/images/mathSettingsButton.png'),
+  },
+
+]
+
+const MathWithHomeScreen = () => {
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [selectedTimeChroniclesPage, setSelectedTimeChroniclesPage] = useState('Home');
   const [chickenNotifEnabled, setChickenNotifEnabled] = useState(false);
@@ -51,64 +77,58 @@ const ChickenRunHomeScreen = () => {
       flex: 1,
       width: '100%',
       height: dimensions.height,
+      backgroundColor: '#86CBDD',
     }}>
-      {/* <LinearGradient
-        style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-        colors={['#F88700', '#FE1B2F']}
-        start={{ x: 1, y: 1 }}
-        end={{ x: 0, y: 0 }}
-      /> */}
       {selectedTimeChroniclesPage === 'Home' ? (
         <SafeAreaView style={{
           flex: 1,
           alignItems: 'center',
         }}>
-          <Image
-            source={require('../assets/images/chickenRunHomeImage.png')}
-            style={{
-              width: dimensions.width * 0.5,
-              height: dimensions.height * 0.19,
-              marginBottom: dimensions.height * 0.07,
-              alignSelf: 'center',
-            }}
-            resizeMode='contain'
-          />
-
-          {['Play', 'Skins', 'Quiz', 'Settings'].map((button, index) => (
+          {mainYellowButtons.map((button, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => {
                 setSelectedTimeChroniclesPage(button);
               }}
               style={{
-                backgroundColor: 'white',
+                backgroundColor: '#FFE066',
                 alignSelf: 'center',
-                width: dimensions.width * 0.75,
+                width: dimensions.width * 0.96,
                 alignItems: 'center',
-                height: dimensions.height * 0.0754,
-                borderRadius: dimensions.width * 0.1111111,
+                height: dimensions.height * 0.17,
+                borderRadius: dimensions.width * 0.0282828,
                 borderWidth: dimensions.width * 0.003,
                 borderColor: 'black',
-                marginBottom: dimensions.height * 0.05,
-                justifyContent: 'center',
+                marginBottom: dimensions.height * 0.03,
+                justifyContent: 'flex-start',
+                flexDirection: 'row',
               }}>
+              <Image
+                source={button.image}
+                style={{
+                  width: dimensions.height * 0.14,
+                  height: dimensions.height * 0.14,
+                  marginRight: dimensions.width * 0.05,
+                }}
+                resizeMode="contain"
+              />
               <Text
                 style={{
-                  color: 'black',
-                  textAlign: 'center',
-                  fontSize: dimensions.width * 0.065,
+                  color: '#5C4033',
+                  textAlign: 'left',
+                  fontSize: dimensions.width * 0.1,
                   fontWeight: 700,
                   alignSelf: 'center',
-                  fontFamily: fontKronaOneRegular,
+                  fontFamily: fontRanchersRegular,
                 }}>
-                {button}
+                {button.text}
               </Text>
             </TouchableOpacity>
           ))}
 
         </SafeAreaView>
       ) : selectedTimeChroniclesPage === 'Settings' ? (
-        <ChickenSettingsScreen setSelectedTimeChroniclesPage={setSelectedTimeChroniclesPage} chickenNotifEnabled={chickenNotifEnabled} setChickenNotifEnabled={setChickenNotifEnabled} 
+        <ChickenSettingsScreen setSelectedTimeChroniclesPage={setSelectedTimeChroniclesPage} chickenNotifEnabled={chickenNotifEnabled} setChickenNotifEnabled={setChickenNotifEnabled}
           chickenVibrationEnabled={chickenVibrationEnabled} setChickenVibrationEnabled={setChickenVibrationEnabled}
         />
       ) : selectedTimeChroniclesPage === 'Skins' ? (
@@ -122,4 +142,4 @@ const ChickenRunHomeScreen = () => {
   );
 };
 
-export default ChickenRunHomeScreen;
+export default MathWithHomeScreen;
