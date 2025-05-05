@@ -14,6 +14,8 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import ChickenSkinsScreen from './ChickenSkinsScreen';
 import ChickenQuizScreen from './ChickenQuizScreen';
 import ChickenRunGameScreen from './ChickenRunGameScreen';
+import Sound from 'react-native-sound';
+import { useAudio } from '../context/AudioContext';
 
 
 const fontRammetoOneRegular = 'RammettoOne-Regular';
@@ -46,31 +48,78 @@ const mainYellowButtons = [
 const MathWithHomeScreen = () => {
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [selectedMathWithScreen, setSelectedMathWithScreen] = useState('Home');
-  const [chickenNotifEnabled, setChickenNotifEnabled] = useState(false);
-  const [chickenVibrationEnabled, setChickenVibrationEnabled] = useState(false);
+  const [mathWithMusicEnabled, setMathWithMusicEnabled] = useState(false);
+  const [vibroMathEnabled, setVibroMathEnabled] = useState(false);
+
+  const { volume } = useAudio();
+  const [mathWithIndOfTrack, setMathWithIndOfTrack] = useState(0);
+  const [sound, setSound] = useState(null);
+
+  const mathTracks = ['mathWithChickensBackgroundMusic.mp3', 'mathWithChickensBackgroundMusic.mp3'];
 
   useEffect(() => {
-    const loadChickenSettingsOfApp = async () => {
+    playMathTracksWith(mathWithIndOfTrack);
+
+    return () => {
+      if (sound) {
+        sound.stop(() => {
+          sound.release();
+        });
+      }
+    };
+  }, [mathWithIndOfTrack]);
+
+  useEffect(() => {
+    if (sound) {
+      sound.setVolume(mathWithMusicEnabled ? 1 : 0);
+    }
+  }, [mathWithMusicEnabled, sound]);
+
+  const playMathTracksWith = (index) => {
+    if (sound) {
+      sound.stop(() => {
+        sound.release();
+      });
+    }
+
+    const newMathSound = new Sound(mathTracks[index], Sound.MAIN_BUNDLE, (error) => {
+      if (error) {
+        console.log('Error math sound:', error);
+        return;
+      }
+      newMathSound.setVolume(volume);
+      newMathSound.play((success) => {
+        if (success) {
+          setMathWithIndOfTrack((prevIndex) => (prevIndex + 1) % mathTracks.length);
+        } else {
+          console.log('Error play track');
+        }
+      });
+      setSound(newMathSound);
+    });
+  };
+
+  useEffect(() => {
+    const loadMathSettingsParams = async () => {
       try {
-        const storedChickenNotifications = await AsyncStorage.getItem('chickenNotifEnabled');
+        const storedMathMusicIs = await AsyncStorage.getItem('mathWithMusicEnabled');
 
-        const storedChickenVibro = await AsyncStorage.getItem('chickenVibroEnabled');
+        const storedMathVibrationIs = await AsyncStorage.getItem('chickenVibroEnabled');
 
-        if (storedChickenNotifications !== null) {
-          setChickenNotifEnabled(JSON.parse(storedChickenNotifications));
+        if (storedMathMusicIs !== null) {
+          setMathWithMusicEnabled(JSON.parse(storedMathMusicIs));
         }
 
-        if (storedChickenVibro !== null) {
-          setChickenVibrationEnabled(JSON.parse(storedChickenVibro));
+        if (storedMathVibrationIs !== null) {
+          setVibroMathEnabled(JSON.parse(storedMathVibrationIs));
         }
       } catch (error) {
-        console.error('Error loading chicken run setting:', error);
+        console.error('Error loading math params:', error);
       }
     };
 
-    loadChickenSettingsOfApp();
+    loadMathSettingsParams();
   }, [])
-
 
   return (
     <View style={{
@@ -94,14 +143,14 @@ const MathWithHomeScreen = () => {
                 backgroundColor: '#FFE066',
                 alignSelf: 'center',
                 width: dimensions.width * 0.96,
+                borderColor: 'black',
                 alignItems: 'center',
                 height: dimensions.height * 0.17,
                 borderRadius: dimensions.width * 0.0282828,
+                flexDirection: 'row',
                 borderWidth: dimensions.width * 0.003,
-                borderColor: 'black',
                 marginBottom: dimensions.height * 0.03,
                 justifyContent: 'flex-start',
-                flexDirection: 'row',
               }}>
               <Image
                 source={mathButton.image}
@@ -128,8 +177,8 @@ const MathWithHomeScreen = () => {
 
         </SafeAreaView>
       ) : selectedMathWithScreen === 'Settings' ? (
-        <ChickenSettingsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} chickenNotifEnabled={chickenNotifEnabled} setChickenNotifEnabled={setChickenNotifEnabled}
-          chickenVibrationEnabled={chickenVibrationEnabled} setChickenVibrationEnabled={setChickenVibrationEnabled}
+        <ChickenSettingsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} mathWithMusicEnabled={mathWithMusicEnabled} setMathWithMusicEnabled={setMathWithMusicEnabled}
+          vibroMathEnabled={vibroMathEnabled} setVibroMathEnabled={setVibroMathEnabled}
         />
       ) : selectedMathWithScreen === 'Skins' ? (
         <ChickenSkinsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />

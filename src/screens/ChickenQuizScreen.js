@@ -17,15 +17,44 @@ import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 import chickenQuestionsData from '../components/chickenQuestionsData';
 
 const fontKronaOneRegular = 'KronaOne-Regular';
+const fontRammetoOneRegular = 'RammettoOne-Regular';
+const fontRanchersRegular = 'Ranchers-Regular';
 
-const questionOnboardingData = [
+const roadMathEggLevels = [
     {
         id: 1,
-        image: require('../assets/images/chickenQuizOnboarding1.png'),
+        right: '10%',
+        top: '13%'
     },
     {
         id: 2,
-        image: require('../assets/images/chickenQuizOnboarding2.png'),
+        right: '30%',
+        top: '23%'
+    },
+    {
+        id: 3,
+        right: '25%',
+        top: '39%'
+    },
+    {
+        id: 4,
+        right: '15%',
+        top: '55%'
+    },
+    {
+        id: 5,
+        right: '32%',
+        top: '66%'
+    },
+    {
+        id: 6,
+        right: '55%',
+        top: '75%'
+    },
+    {
+        id: 7,
+        right: '39%',
+        top: '86%'
     },
 ]
 
@@ -35,7 +64,11 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
     const [eggBalance, setEggBalance] = useState(0);
     const styles = createChickenQuizStyles(dimensions);
 
-    const [isChickenQuizAvailable, setIsChickenQuizAvailable] = useState(true);
+    const [mathQuizPreviewModalVisible, setMathQuizPreviewModalVisible] = useState(true);
+    const [ownedMathQuizLevels, setOwnedMathQuizLevels] = useState([1]);
+    const [selectedMathQuizLevel, setSelectedMathQuizLevel] = useState(1);
+    const [positiveMathQuizAnswersAmount, setPositiveMathQuizAnswersAmount] = useState(0);
+    const modalStyles = mathModalStyles(dimensions);
 
     const [isChickenQuizStarted, setIsChickenQuizStarted] = useState(false);
     const [currentIndexOfChickenSlide, setCurrentIndexOfChickenSlide] = useState(0);
@@ -46,10 +79,25 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
     const [isChickenAnswerButtonsActive, setIsChickenAnswerButtonsActive] = useState(true);
     const [isChickenQuizFinished, setIsChickenQuizFinished] = useState(false);
 
-    const [timeUntilAvailable, setTimeUntilAvailable] = useState(0);
     const [quizEggs, setQuizEggs] = useState(0);
 
-    const handleChickenToAnswer = () => {
+    useEffect(() => {
+        const loadMathLevels = async () => {
+            try {
+                const storedMathQuizLevels = await AsyncStorage.getItem('ownedMathQuizLevels');
+                let mathQuizLevels = storedMathQuizLevels ? JSON.parse(storedMathQuizLevels) : [1];
+                if (!storedMathQuizLevels) {
+                    await AsyncStorage.setItem('ownedMathQuizLevels', JSON.stringify(mathQuizLevels));
+                }
+                setOwnedMathQuizLevels(mathQuizLevels);
+            } catch (error) {
+                console.error('Error loading mathQuizLevels of math quiz:', error);
+            }
+        };
+        loadMathLevels();
+    }, []);
+
+    const handleChickenToAnswer = (selectedMathAnswer) => {
         setIsChickenAnswerGiven(true);
         setIsChickenAnswerButtonsActive(false);
 
@@ -62,25 +110,15 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
             } else setCurrentChickenQuizQuestionIndex(prev => prev + 1);
         }, 2000)
 
-        if (choosenChickenAnswer.isChickenCorrect) setQuizEggs(prev => prev + 5);
+        if (selectedMathAnswer.isMathCorrectResult) setPositiveMathQuizAnswersAmount(prev => prev + 1);
     };
 
     useEffect(() => {
-        const generateRandomQuestions = () => {
-            const questionsCopy = [...chickenQuestionsData];
-            for (let i = questionsCopy.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [questionsCopy[i], questionsCopy[j]] = [questionsCopy[j], questionsCopy[i]];
-            }
-            return questionsCopy.slice(0, 5);
-        };
-
-        const randomQuestions = generateRandomQuestions();
-        setTodayChickenQuestionsData(randomQuestions);
+        setTodayChickenQuestionsData(chickenQuestionsData.filter(item => item.levelID === selectedMathQuizLevel)[0].questions);
     }, []);
 
     useEffect(() => {
-        const loadData = async () => {
+        const loadMathLevels = async () => {
             try {
                 const storedEggBalance = await AsyncStorage.getItem('eggBalance');
                 if (storedEggBalance !== null) {
@@ -90,7 +128,7 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
                 console.error('Error loading data from AsyncStorage:', error);
             }
         };
-        loadData();
+        loadMathLevels();
     }, []);
 
     useEffect(() => {
@@ -111,286 +149,235 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
     }, [isChickenQuizFinished]);
 
     useEffect(() => {
-        const checkQuizAvailability = async () => {
-            try {
-                const storedTime = await AsyncStorage.getItem('testCompleted');
-                if (storedTime) {
-                    const testTime = new Date(storedTime);
-                    const now = new Date();
-                    const diffHours = (now - testTime) / (1000 * 60 * 60);
-                    if (diffHours < 24) {
-                        setIsChickenQuizAvailable(false);
-                        setTimeUntilAvailable(Math.ceil(24 - diffHours));
-                    } else {
-                        setIsChickenQuizAvailable(true);
+        const updateOwnedChickenLevels = async () => {
+            if (selectedMathQuizLevel < 7 && isChickenQuizFinished && positiveMathQuizAnswersAmount === 4 && !ownedMathQuizLevels.includes(selectedMathQuizLevel + 1)) {
+                try {
+                    const storedMathQuizLevels = await AsyncStorage.getItem('ownedMathQuizLevels');
+                    let mathQuizLevels = storedMathQuizLevels ? JSON.parse(storedMathQuizLevels) : [1];
+                    const newMathQuizLevel = selectedMathQuizLevel + 1;
+                    if (!mathQuizLevels.includes(newMathQuizLevel)) {
+                        mathQuizLevels.push(newMathQuizLevel);
+                        await AsyncStorage.setItem('ownedMathQuizLevels', JSON.stringify(mathQuizLevels));
+                        setOwnedMathQuizLevels(mathQuizLevels);
                     }
-                } else {
-                    setIsChickenQuizAvailable(true);
+                } catch (error) {
+                    console.error('Failed to update owned chicken mathQuizLevels of run:', error);
                 }
-            } catch (error) {
-                console.error('Error checking quiz availability:', error);
             }
         };
-        checkQuizAvailability();
-    }, []);
+
+        updateOwnedChickenLevels();
+    }, [isChickenQuizFinished]);
 
     return (
         <SafeAreaView style={{ width: dimensions.width, height: dimensions.height }}>
-            {isChickenQuizAvailable ? (
+            {!isChickenQuizStarted && !isChickenQuizFinished ? (
                 <>
-                    {!isChickenQuizStarted && !isChickenQuizFinished ? (
-                        <>
-                            <Image
-                                source={questionOnboardingData[currentIndexOfChickenSlide].image}
-                                style={{
-                                    width: dimensions.width * 0.9,
-                                    height: dimensions.height * 0.7,
+                    <Image
+                        source={require('../assets/images/quizRoadBg.png')}
+                        style={{
+                            position: 'absolute',
+                            width: dimensions.width,
+                            height: dimensions.height * 0.8,
+                            alignSelf: 'center',
+                            top: dimensions.height * 0.1,
+                            zIndex: -1,
+                            borderRadius: dimensions.width * 0.03,
+                            borderWidth: dimensions.width * 0.003,
+                            borderColor: 'black',
+                        }}
+                    />
+
+                    {roadMathEggLevels.map((eggLevel, index) => (
+                        <TouchableOpacity style={{
+                            position: 'absolute',
+                            right: eggLevel.right,
+                            top: eggLevel.top,
+                        }}
+                            key={index}
+                            onPress={() => {
+                                setSelectedMathQuizLevel(eggLevel.id);
+                                setIsChickenQuizStarted(true);
+                                setCurrentChickenQuizQuestionIndex(0);
+                                setIsChickenQuizFinished(false);
+                            }}
+                            disabled={!ownedMathQuizLevels.includes(eggLevel.id)}
+                            activeOpacity={0.7}
+                        >
+                            {ownedMathQuizLevels.includes(eggLevel.id) && (
+                                <Text style={[styles.ranchesTextStyles,
+                                {
+                                    fontSize: dimensions.width * 0.19,
+                                    position: 'absolute',
                                     alignSelf: 'center',
-                                    marginTop: dimensions.height * 0.05,
+                                    top: '10%',
+                                    zIndex: 10,
+                                    color: 'black',
+                                }]}>
+                                    {eggLevel.id}
+                                </Text>
+                            )}
+                            <Image
+                                source={ownedMathQuizLevels.includes(eggLevel.id)
+                                    ? require('../assets/images/yellowMathEgg.png')
+                                    : require('../assets/images/silverMathEgg.png')}
+                                style={{
+                                    width: dimensions.height * 0.13,
+                                    height: dimensions.height * 0.13,
                                 }}
                                 resizeMode='contain'
                             />
 
-                            <TouchableOpacity
-                                onPress={() => {
-                                    if (currentIndexOfChickenSlide === 0) {
-                                        setCurrentIndexOfChickenSlide(1);
-                                    } else setIsChickenQuizStarted(true);
-                                }}
-                                style={styles.bottomButton}
-                            >
-                                <Text
-                                    style={{
-                                        textAlign: 'center',
-                                        color: 'black',
-                                        fontFamily: fontKronaOneRegular,
-                                        fontWeight: 700,
-                                        paddingHorizontal: dimensions.width * 0.05,
-                                        fontSize: dimensions.width * 0.06,
-                                    }}>
-                                    {currentIndexOfChickenSlide >= questionOnboardingData.length - 1 ? 'Start' : 'Next'}
-                                </Text>
-                            </TouchableOpacity>
-                        </>
-                    ) : isChickenQuizStarted && !isChickenQuizFinished ? (
-                        <>
-                            <View style={{
-                                flexDirection: 'row',
-                                justifyContent: 'space-between',
-                                alignItems: 'center',
-                            }}>
-                                <TouchableOpacity style={{
-                                    alignSelf: 'flex-start',
-                                    marginLeft: dimensions.width * 0.0343434,
-                                }}
-                                    onPress={() => {
-                                        setSelectedMathWithScreen('Home');
-                                    }}
-                                >
-                                    <ArrowLeftIcon size={dimensions.width * 0.1} color='black' />
-                                </TouchableOpacity>
+                        </TouchableOpacity>
+                    ))}
 
-                                <Text
-                                    style={{
-                                        color: 'black',
-                                        textAlign: 'center',
-                                        fontSize: dimensions.width * 0.065,
-                                        fontWeight: 500,
-                                        alignSelf: 'center',
-                                        fontFamily: fontKronaOneRegular,
-                                        marginRight: dimensions.width * 0.14,
-                                    }}>
-                                    Question {currentChickenQuizQuestionIndex + 1}
-                                </Text>
-                                <View />
-                            </View>
-
-                            <View style={{
-                                width: dimensions.width * 0.898,
-                                height: dimensions.height * 0.65,
+                    <TouchableOpacity
+                        onPress={() => {
+                            setSelectedMathWithScreen('Home');
+                        }}
+                        style={{
+                            backgroundColor: '#FFE066',
+                            borderRadius: dimensions.width * 0.8,
+                            width: dimensions.height * 0.1,
+                            height: dimensions.height * 0.1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            position: 'absolute',
+                            bottom: dimensions.height * 0.13,
+                            right: dimensions.width * 0.05,
+                        }}
+                    >
+                        <Image
+                            source={require('../assets/icons/goHomeMathIcon.png')}
+                            style={{
+                                width: dimensions.height * 0.07,
+                                height: dimensions.height * 0.07,
                                 alignSelf: 'center',
-                                marginTop: dimensions.height * 0.05,
-                                backgroundColor: '#fff',
-                                borderRadius: dimensions.width * 0.04,
-                            }}>
-                                <View style={{
-                                    alignSelf: 'center',
-                                    width: '100%',
-                                    height: '30%',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
-                                    <Text
-                                        style={{
-                                            color: 'black',
-                                            textAlign: 'center',
-                                            fontSize: dimensions.width * 0.04,
-                                            alignSelf: 'center',
-                                            fontFamily: fontKronaOneRegular,
-                                        }}>
-                                        {todayChickenQuestionsData[currentChickenQuizQuestionIndex].chickenQuestion}
-                                    </Text>
-                                </View>
-
-                                <View style={{
-                                    alignSelf: 'center',
-                                    marginTop: -dimensions.height * 0.05,
-                                    width: '100%',
-                                    height: '70%',
-                                    alignItems: 'center',
-                                    justifyContent: 'center',
-                                }}>
-                                    {todayChickenQuestionsData[currentChickenQuizQuestionIndex].chickenAnswers.map((option, index) => {
-                                        let buttonBackground = '#fff';
-                                        if (isChickenAnswerGiven) {
-                                            if (option.isChickenCorrect) {
-                                                buttonBackground = '#51FF00';
-                                            } else if (choosenChickenAnswer && choosenChickenAnswer.chickenAnswer === option.chickenAnswer) {
-                                                buttonBackground = '#FF0404';
-                                            }
-                                        }
-                                        return (
-                                            <TouchableOpacity
-                                                key={index}
-                                                disabled={!isChickenAnswerButtonsActive}
-                                                onPress={() => {
-                                                    if (!isChickenAnswerGiven) {
-                                                        if (choosenChickenAnswer?.chickenAnswer === option.chickenAnswer) {
-                                                            setChoosenChickenAnswer(null);
-                                                        } else {
-                                                            setChoosenChickenAnswer(option);
-                                                        }
-                                                    }
-                                                }}
-                                                style={[styles.chickenAnswerButtonsStyles, {
-                                                    backgroundColor: buttonBackground,
-                                                    borderColor: 'black',
-                                                }]}>
-                                                <Text style={styles.chickenQuizAnswers}>{option.chickenAnswer}</Text>
-                                            </TouchableOpacity>
-                                        );
-                                    })}
-                                </View>
-                            </View>
-
-                            {choosenChickenAnswer && isChickenAnswerButtonsActive && (
-                                <TouchableOpacity
-                                    onPress={() => {
-                                        handleChickenToAnswer();
-                                    }}
-                                    style={styles.bottomButton}
-                                >
-                                    <Text
-                                        style={{
-                                            textAlign: 'center',
-                                            color: 'black',
-                                            fontFamily: fontKronaOneRegular,
-                                            fontWeight: 700,
-                                            paddingHorizontal: dimensions.width * 0.05,
-                                            fontSize: dimensions.width * 0.06,
-                                        }}>
-                                        Next
-                                    </Text>
-                                </TouchableOpacity>
-                            )}
-                        </>
-                    ) : (
-                        <>
-                            <Text
+                            }}
+                            resizeMode='contain'
+                        />
+                    </TouchableOpacity>
+                </>
+            ) : isChickenQuizStarted && !isChickenQuizFinished ? (
+                <>
+                    <View style={{
+                        width: '100%',
+                        height: dimensions.height * 0.65,
+                        alignSelf: 'center',
+                        marginTop: dimensions.height * 0.05,
+                    }}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'flex-start',
+                            width: '95%',
+                            marginBottom: dimensions.height * 0.07,
+                            backgroundColor: '#FFE066',
+                            borderRadius: dimensions.width * 0.03,
+                            borderWidth: dimensions.width * 0.003,
+                            borderColor: 'black',
+                            alignSelf: 'center',
+                        }}>
+                            <Image
+                                source={require('../assets/images/mathQuizButton.png')}
                                 style={{
-                                    color: 'black',
-                                    textAlign: 'center',
-                                    fontSize: dimensions.width * 0.065,
-                                    fontWeight: 500,
-                                    alignSelf: 'center',
-                                    fontFamily: fontKronaOneRegular,
-                                }}>
-                                The quiz is over!!!
-                            </Text>
+                                    width: dimensions.width * 0.3,
+                                    height: dimensions.height * 0.15,
 
-                            <View style={{
-                                width: dimensions.width * 0.8,
-                                backgroundColor: 'white',
-                                borderRadius: dimensions.width * 0.05,
-                                padding: dimensions.width * 0.05,
-                                alignSelf: 'center',
-                                marginTop: dimensions.height * 0.1,
-                            }}>
-                                <Image
-                                    source={require('../assets/images/successfullyBoughtChicken.png')}
-                                    style={{
-                                        width: dimensions.width * 0.4,
-                                        height: dimensions.height * 0.23,
-                                        alignSelf: 'center',
-                                    }}
-                                    resizeMode='contain'
-                                />
-
-                                <View style={{
-                                    alignItems: 'center', marginVertical: dimensions.height * 0.02, flexDirection: 'row', justifyContent: 'center',
-
-                                }}>
-                                    <Text style={{
-                                        fontSize: dimensions.width * 0.04,
-                                        fontWeight: '700',
-                                        fontFamily: fontKronaOneRegular,
-                                        textAlign: 'center',
-                                    }}>
-                                        Your result:
-                                    </Text>
-
-                                    <Image source={require('../assets/images/chickenAggImage.png')} style={{
-                                        width: dimensions.width * 0.055,
-                                        height: dimensions.height * 0.05,
-                                        marginHorizontal: dimensions.width * 0.02,
-                                    }} resizeMode='contain' />
-
-                                    <Text style={{
-                                        fontSize: dimensions.width * 0.07,
-                                        fontWeight: '700',
-                                        fontFamily: fontKronaOneRegular,
-                                        textAlign: 'center',
-                                    }}>
-                                        {quizEggs}
-                                    </Text>
-                                </View>
-                            </View>
-
-                            <TouchableOpacity
-                                onPress={() => {
-                                    setSelectedMathWithScreen('Home');
                                 }}
-                                style={styles.bottomButton}
-                            >
-                                <Text
-                                    style={{
-                                        textAlign: 'center',
-                                        color: 'black',
-                                        fontFamily: fontKronaOneRegular,
-                                        fontWeight: 700,
-                                        paddingHorizontal: dimensions.width * 0.05,
-                                        fontSize: dimensions.width * 0.06,
-                                    }}>
-                                    Back to menu
+                                resizeMode="contain"
+                            />
+                            <View style={{
+                                width: dimensions.width * 0.6,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                                <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.1 }]}>
+                                    {todayChickenQuestionsData[currentChickenQuizQuestionIndex].mathQuestion}
                                 </Text>
-                            </TouchableOpacity>
-                        </>
-                    )}
+                            </View>
+                        </View>
+
+                        <View style={{
+                            alignSelf: 'center',
+                            marginTop: -dimensions.height * 0.05,
+                            width: '100%',
+                            height: '70%',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                            {todayChickenQuestionsData[currentChickenQuizQuestionIndex].mathAnswers.map((mathAnswer, index) => {
+                                let buttonBackground = '#FFE066';
+                                if (isChickenAnswerGiven) {
+                                    if (mathAnswer.isMathCorrectResult) {
+                                        buttonBackground = '#0AFF05';
+                                    } else if (choosenChickenAnswer && choosenChickenAnswer.mathAnswer === mathAnswer.mathAnswer) {
+                                        buttonBackground = '#FF2828';
+                                    }
+                                }
+                                return (
+                                    <TouchableOpacity
+                                        key={index}
+                                        disabled={!isChickenAnswerButtonsActive}
+                                        onPress={() => {
+                                            if (!isChickenAnswerGiven) {
+                                                setChoosenChickenAnswer(mathAnswer);
+                                                handleChickenToAnswer(mathAnswer);
+                                                console.log('Selected answer:', mathAnswer);
+                                            }
+                                        }}
+                                        style={[styles.chickenAnswerButtonsStyles, {
+                                            backgroundColor: buttonBackground,
+                                            borderColor: 'black',
+                                            width: '95%',
+                                            borderRadius: dimensions.width * 0.03,
+                                            borderWidth: dimensions.width * 0.003,
+                                            borderColor: 'black',
+                                            height: dimensions.height * 0.1,
+                                            marginBottom: dimensions.height * 0.02,
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                        }]}>
+                                        <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.14 }]}>
+                                            {mathAnswer.mathAnswer}
+                                        </Text>
+                                    </TouchableOpacity>
+                                );
+                            })}
+                        </View>
+                    </View>
                 </>
             ) : (
                 <>
-                    <Text
-                        style={{
-                            textAlign: 'center',
-                            color: 'black',
-                            fontFamily: fontKronaOneRegular,
-                            fontWeight: 700,
-                            paddingHorizontal: dimensions.width * 0.05,
-                            fontSize: dimensions.width * 0.06,
-                            marginTop: dimensions.height * 0.3,
-                        }}>
-                        Quiz is not available, the next attempt will be made in {timeUntilAvailable} hours
-                    </Text>
+                    <View style={{
+                        width: '95%',
+                        backgroundColor: '#FFE066',
+                        borderRadius: dimensions.width * 0.03,
+                        borderWidth: dimensions.width * 0.003,
+                        borderColor: 'black',
+                        padding: dimensions.width * 0.04,
+                        alignSelf: 'center',
+                        marginTop: dimensions.height * 0.03,
+                    }}>
+                        <Image
+                            source={require('../assets/images/successfullyBoughtChicken.png')}
+                            style={{
+                                width: dimensions.width * 0.4,
+                                height: dimensions.height * 0.23,
+                                alignSelf: 'center',
+                            }}
+                            resizeMode='contain'
+                        />
+
+
+                        <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.1 }]}>
+                            Well done!
+                        </Text>
+
+                        <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.05, marginTop: dimensions.height * 0.02 }]}>
+                        Next level is unlocked! {'\n'}New egg added to game mode!
+                        </Text>
+                    </View>
 
                     <TouchableOpacity
                         onPress={() => {
@@ -413,6 +400,60 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
                 </>
             )}
 
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={mathQuizPreviewModalVisible}
+                onRequestClose={() => setMathQuizPreviewModalVisible(false)}
+            >
+                <View style={modalStyles.centeredView}>
+                    <View style={modalStyles.modalView}>
+                        <View style={{
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'flex-start',
+                            width: '100%',
+                            marginBottom: dimensions.height * 0.03,
+
+                        }}>
+                            <Image
+                                source={require('../assets/images/mathQuizButton.png')}
+                                style={{
+                                    width: dimensions.width * 0.3,
+                                    height: dimensions.height * 0.15,
+                                    marginRight: dimensions.width * 0.05,
+                                }}
+                                resizeMode="contain"
+                            />
+                            <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.12 }]}>
+                                Math Quiz
+                            </Text>
+                        </View>
+
+                        <Text style={[styles.ranchesTextStyles, {
+                            fontSize: dimensions.width * 0.06,
+                            textAlign: 'left',
+                            marginBottom: dimensions.height * 0.03,
+
+                        }]}>
+                            Solve simple addition problems to help your chicken learn! Choose the correct answer from the options. Complete all questions to unlock a new number and a special egg for the game!
+                            {'\n\n'}Tips:
+                            {'\n   '} • Think carefully before you choose.
+                            {'\n   '} • No rush — take your time to get it right!
+                        </Text>
+
+                        <TouchableOpacity
+                            onPress={() => setMathQuizPreviewModalVisible(false)}
+                            style={[modalStyles.mathCancelConfirmButtons, {
+                                backgroundColor: '#0AFF05',
+                            }]}>
+                            <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.08 }]}>
+                                Got it
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
 
 
         </SafeAreaView>
@@ -426,31 +467,47 @@ const createChickenQuizStyles = (dimensions) => StyleSheet.create({
         fontFamily: fontKronaOneRegular,
         textAlign: 'center',
     },
-    chickenAnswerButtonsStyles: {
-        height: dimensions.height * 0.065,
-        borderRadius: dimensions.width * 0.04,
-        borderWidth: dimensions.width * 0.002,
-        borderColor: 'black',
-        width: '90%',
+    ranchesTextStyles: {
+        color: '#5C4033',
+        textAlign: 'center',
+        alignSelf: 'center',
+        fontFamily: fontRanchersRegular,
+    }
+});
 
-        alignSelf: 'center',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: dimensions.height * 0.02,
+const mathModalStyles = (dimensions) => StyleSheet.create({
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        // backgroundColor: 'rgba(0,0,0,0.5)'
     },
-    bottomButton: {
-        alignSelf: 'center',
-        alignItems: 'center',
-        borderRadius: dimensions.width * 0.0616161,
-        justifyContent: 'center',
-        marginTop: dimensions.height * 0.03,
-        backgroundColor: '#fff',
-        height: dimensions.height * 0.08,
-        width: dimensions.width * 0.8818,
-        position: 'absolute',
-        bottom: dimensions.height * 0.05,
-        borderColor: 'black',
+    modalView: {
+        width: '95%',
+        backgroundColor: "#FFE066",
+        borderColor: "black",
         borderWidth: dimensions.width * 0.003,
+        borderRadius: dimensions.width * 0.03,
+        paddingHorizontal: dimensions.width * 0.03,
+        paddingVertical: dimensions.height * 0.02,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    mathCancelConfirmButtons: {
+        width: dimensions.width * 0.3,
+        height: dimensions.height * 0.08,
+        borderRadius: dimensions.width * 0.03,
+        borderWidth: dimensions.width * 0.003,
+        borderColor: 'black',
+        justifyContent: 'center',
+        alignItems: 'center',
     }
 });
 

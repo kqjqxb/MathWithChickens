@@ -16,7 +16,7 @@ import RNRestart from 'react-native-restart';
 const fontRammetoOneRegular = 'RammettoOne-Regular';
 const fontRanchersRegular = 'Ranchers-Regular';
 
-const ChickenSettingsScreen = ({ setSelectedMathWithScreen, chickenNotifEnabled, setChickenNotifEnabled, chickenVibrationEnabled, setChickenVibrationEnabled }) => {
+const ChickenSettingsScreen = ({ setSelectedMathWithScreen, mathWithMusicEnabled, setMathWithMusicEnabled, vibroMathEnabled, setVibroMathEnabled }) => {
     const [dimensions, setDimensions] = useState(Dimensions.get('window'));
     const [volume, setVolume] = useState(0.5);
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -84,8 +84,8 @@ const ChickenSettingsScreen = ({ setSelectedMathWithScreen, chickenNotifEnabled,
                     </Text>
                     <TouchableOpacity
                         onPress={async () => {
-                            const newValue = !chickenVibrationEnabled;
-                            setChickenVibrationEnabled(newValue);
+                            const newValue = !vibroMathEnabled;
+                            setVibroMathEnabled(newValue);
                             try {
                                 await AsyncStorage.setItem('chickenVibroEnabled', newValue.toString());
                             } catch (error) {
@@ -93,7 +93,7 @@ const ChickenSettingsScreen = ({ setSelectedMathWithScreen, chickenNotifEnabled,
                             }
                         }}>
                         <Image
-                            source={chickenVibrationEnabled
+                            source={vibroMathEnabled
                                 ? require('../assets/icons/settingsIcons/vibroOn.png')
                                 : require('../assets/icons/settingsIcons/vibroOff.png')}
                             style={{
@@ -110,16 +110,16 @@ const ChickenSettingsScreen = ({ setSelectedMathWithScreen, chickenNotifEnabled,
                     </Text>
                     <TouchableOpacity
                         onPress={async () => {
-                            const newValue = !chickenNotifEnabled;
-                            setChickenNotifEnabled(newValue);
+                            const newValue = !mathWithMusicEnabled;
+                            setMathWithMusicEnabled(newValue);
                             try {
-                                await AsyncStorage.setItem('chickenNotifEnabled', newValue.toString());
+                                await AsyncStorage.setItem('mathWithMusicEnabled', newValue.toString());
                             } catch (error) {
-                                console.error('Error updating chickenNotifEnabled in AsyncStorage:', error);
+                                console.error('Error updating mathWithMusicEnabled in AsyncStorage:', error);
                             }
                         }}>
                         <Image
-                            source={chickenNotifEnabled
+                            source={mathWithMusicEnabled
                                 ? require('../assets/icons/settingsIcons/musicOn.png')
                                 : require('../assets/icons/settingsIcons/musicOff.png')}
                             style={{

@@ -14,6 +14,7 @@
 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
 		9BC99BE9A5B87A3F9412FBCE /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB81A68108700A75B9A /* PrivacyInfo.xcprivacy */; };
 		C2B668B0DD5945DEB8510B28 /* Ranchers-Regular.ttf in Resources */ = {isa = PBXBuildFile; fileRef = 1E814A44E08C46CBB7133E63 /* Ranchers-Regular.ttf */; };
+		CE8C33F62DC8D3A9006E0645 /* mathWithChickensBackgroundMusic.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = CE8C33F52DC8D3A9006E0645 /* mathWithChickensBackgroundMusic.mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +29,7 @@
 		5DCACB8F33CDC322A6C60F78 /* libPods-MathWithChickens.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MathWithChickens.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		761780EC2CA45674006654EE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = AppDelegate.swift; path = MathWithChickens/AppDelegate.swift; sourceTree = "<group>"; };
 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = MathWithChickens/LaunchScreen.storyboard; sourceTree = "<group>"; };
+		CE8C33F52DC8D3A9006E0645 /* mathWithChickensBackgroundMusic.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = mathWithChickensBackgroundMusic.mp3; sourceTree = "<group>"; };
 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
@@ -58,6 +60,7 @@
 		2455CF1389C04396A1EA1DB5 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
+				CE8C33F52DC8D3A9006E0645 /* mathWithChickensBackgroundMusic.mp3 */,
 				0A65E3D9319D4D6A9044CF3A /* RammettoOne-Regular.ttf */,
 				1E814A44E08C46CBB7133E63 /* Ranchers-Regular.ttf */,
 			);
@@ -174,6 +177,7 @@
 			files = (
 				81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */,
 				13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */,
+				CE8C33F62DC8D3A9006E0645 /* mathWithChickensBackgroundMusic.mp3 in Resources */,
 				9BC99BE9A5B87A3F9412FBCE /* PrivacyInfo.xcprivacy in Resources */,
 				586BAE28258B4EB192B34671 /* RammettoOne-Regular.ttf in Resources */,
 				C2B668B0DD5945DEB8510B28 /* Ranchers-Regular.ttf in Resources */,
@@ -392,7 +396,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "$(inherited) DEBUG";
@@ -461,7 +468,10 @@
 					"-DFOLLY_CFG_NO_COROUTINES=1",
 					"-DFOLLY_HAVE_CLOCK_GETTIME=1",
 				);
-				OTHER_LDFLAGS = "$(inherited)  ";
+				OTHER_LDFLAGS = (
+					"$(inherited)",
+					" ",
+				);
 				REACT_NATIVE_PATH = "${PODS_ROOT}/../../node_modules/react-native";
 				SDKROOT = iphoneos;
 				USE_HERMES = true;
