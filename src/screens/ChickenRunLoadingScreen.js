@@ -6,6 +6,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { loadUserData } from '../redux/userSlice';
 import { UserContext } from '../context/UserContext';
+import MathLoader from '../components/MathLoader';
 
 const ChickenRunLoadingScreen = () => {
   const navigation = useNavigation();
@@ -52,7 +53,7 @@ const ChickenRunLoadingScreen = () => {
       const timer = setTimeout(() => {
         const destination = isChickenOnbWasVisibledRunYet ? 'ChickenRunOnboardingScreen' : 'MathWithHomeScreen';
         navigation.replace(destination);
-      }, 1000);
+      }, 3000);
       return () => clearTimeout(timer);
     }
   }, [initializationChickenLoadingCompleted, isChickenOnbWasVisibledRunYet, navigation]);
@@ -64,6 +65,7 @@ const ChickenRunLoadingScreen = () => {
       alignSelf: 'center',
       justifyContent: 'center',
       width: '100%',
+      backgroundColor: '#86CBDD',
     }}>
       {/* <LinearGradient
         style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
@@ -72,15 +74,16 @@ const ChickenRunLoadingScreen = () => {
         end={{ x: 0, y: 0 }}
       /> */}
       <Image
-        source={require('../assets/images/chickenRunHomeImage.png')}
+        source={require('../assets/images/mathLoadingImage.png')}
         style={{
-          width: dimensions.width * 0.8,
-          height: dimensions.height * 0.4,
-          marginBottom: dimensions.height * 0.07,
+          width: dimensions.width * 0.94,
+          height: dimensions.height * 0.43,
           alignSelf: 'center',
         }}
         resizeMode='contain'
       />
+
+      <MathLoader />
     </View>
   );
 };

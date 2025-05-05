@@ -29,7 +29,7 @@ const ChickenRunStack = () => {
 const AppNavigator = () => {
   return (
     <NavigationContainer>
-        <Stack.Navigator initialRouteName={'ChickenRunOnboardingScreen'}>
+        <Stack.Navigator initialRouteName={'LoadPrideQuestScreen'}>
           <Stack.Screen name="MathWithHomeScreen" component={MathWithHomeScreen} options={{ headerShown: false }} />
           <Stack.Screen name="LoadPrideQuestScreen" component={ChickenRunLoadingScreen} options={{ headerShown: false }} />
           <Stack.Screen name="ChickenRunOnboardingScreen" component={MathOnboardingScreen} options={{ headerShown: false }} />

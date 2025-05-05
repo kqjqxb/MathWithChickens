@@ -45,7 +45,7 @@ const mainYellowButtons = [
 
 const MathWithHomeScreen = () => {
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
-  const [selectedTimeChroniclesPage, setSelectedTimeChroniclesPage] = useState('Home');
+  const [selectedMathWithScreen, setSelectedMathWithScreen] = useState('Home');
   const [chickenNotifEnabled, setChickenNotifEnabled] = useState(false);
   const [chickenVibrationEnabled, setChickenVibrationEnabled] = useState(false);
 
@@ -79,16 +79,16 @@ const MathWithHomeScreen = () => {
       height: dimensions.height,
       backgroundColor: '#86CBDD',
     }}>
-      {selectedTimeChroniclesPage === 'Home' ? (
+      {selectedMathWithScreen === 'Home' ? (
         <SafeAreaView style={{
           flex: 1,
           alignItems: 'center',
         }}>
-          {mainYellowButtons.map((button, index) => (
+          {mainYellowButtons.map((mathButton, index) => (
             <TouchableOpacity
               key={index}
               onPress={() => {
-                setSelectedTimeChroniclesPage(button);
+                setSelectedMathWithScreen(mathButton.text);
               }}
               style={{
                 backgroundColor: '#FFE066',
@@ -104,7 +104,7 @@ const MathWithHomeScreen = () => {
                 flexDirection: 'row',
               }}>
               <Image
-                source={button.image}
+                source={mathButton.image}
                 style={{
                   width: dimensions.height * 0.14,
                   height: dimensions.height * 0.14,
@@ -121,22 +121,22 @@ const MathWithHomeScreen = () => {
                   alignSelf: 'center',
                   fontFamily: fontRanchersRegular,
                 }}>
-                {button.text}
+                {mathButton.text}
               </Text>
             </TouchableOpacity>
           ))}
 
         </SafeAreaView>
-      ) : selectedTimeChroniclesPage === 'Settings' ? (
-        <ChickenSettingsScreen setSelectedTimeChroniclesPage={setSelectedTimeChroniclesPage} chickenNotifEnabled={chickenNotifEnabled} setChickenNotifEnabled={setChickenNotifEnabled}
+      ) : selectedMathWithScreen === 'Settings' ? (
+        <ChickenSettingsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} chickenNotifEnabled={chickenNotifEnabled} setChickenNotifEnabled={setChickenNotifEnabled}
           chickenVibrationEnabled={chickenVibrationEnabled} setChickenVibrationEnabled={setChickenVibrationEnabled}
         />
-      ) : selectedTimeChroniclesPage === 'Skins' ? (
-        <ChickenSkinsScreen setSelectedTimeChroniclesPage={setSelectedTimeChroniclesPage} />
-      ) : selectedTimeChroniclesPage === 'Quiz' ? (
-        <ChickenQuizScreen setSelectedTimeChroniclesPage={setSelectedTimeChroniclesPage} />
-      ) : selectedTimeChroniclesPage === 'Play' ? (
-        <ChickenRunGameScreen setSelectedTimeChroniclesPage={setSelectedTimeChroniclesPage} />
+      ) : selectedMathWithScreen === 'Skins' ? (
+        <ChickenSkinsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />
+      ) : selectedMathWithScreen === 'Math Quiz' ? (
+        <ChickenQuizScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />
+      ) : selectedMathWithScreen === 'Play' ? (
+        <ChickenRunGameScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />
       ) : null}
     </View>
   );

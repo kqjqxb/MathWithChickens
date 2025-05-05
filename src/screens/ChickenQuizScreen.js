@@ -30,7 +30,7 @@ const questionOnboardingData = [
 ]
 
 
-const ChickenQuizScreen = ({ setSelectedTimeChroniclesPage, }) => {
+const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
     const [dimensions, setDimensions] = useState(Dimensions.get('window'));
     const [eggBalance, setEggBalance] = useState(0);
     const styles = createChickenQuizStyles(dimensions);
@@ -184,7 +184,7 @@ const ChickenQuizScreen = ({ setSelectedTimeChroniclesPage, }) => {
                                     marginLeft: dimensions.width * 0.0343434,
                                 }}
                                     onPress={() => {
-                                        setSelectedTimeChroniclesPage('Home');
+                                        setSelectedMathWithScreen('Home');
                                     }}
                                 >
                                     <ArrowLeftIcon size={dimensions.width * 0.1} color='black' />
@@ -358,7 +358,7 @@ const ChickenQuizScreen = ({ setSelectedTimeChroniclesPage, }) => {
 
                             <TouchableOpacity
                                 onPress={() => {
-                                    setSelectedTimeChroniclesPage('Home');
+                                    setSelectedMathWithScreen('Home');
                                 }}
                                 style={styles.bottomButton}
                             >
@@ -394,7 +394,7 @@ const ChickenQuizScreen = ({ setSelectedTimeChroniclesPage, }) => {
 
                     <TouchableOpacity
                         onPress={() => {
-                            setSelectedTimeChroniclesPage('Home');
+                            setSelectedMathWithScreen('Home');
                         }}
                         style={styles.bottomButton}
                     >

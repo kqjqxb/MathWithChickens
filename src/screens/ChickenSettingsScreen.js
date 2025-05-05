@@ -6,16 +6,22 @@ import {
     SafeAreaView,
     TouchableOpacity,
     Image,
-    Share
+    Share,
+    StyleSheet,
+    Modal
 } from 'react-native';
-import Slider from '@react-native-community/slider';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNRestart from 'react-native-restart';
 
-const fontKronaOneRegular = 'KronaOne-Regular';
+const fontRammetoOneRegular = 'RammettoOne-Regular';
+const fontRanchersRegular = 'Ranchers-Regular';
 
-const ChickenSettingsScreen = ({ setSelectedTimeChroniclesPage, chickenNotifEnabled, setChickenNotifEnabled, chickenVibrationEnabled, setChickenVibrationEnabled }) => {
+const ChickenSettingsScreen = ({ setSelectedMathWithScreen, chickenNotifEnabled, setChickenNotifEnabled, chickenVibrationEnabled, setChickenVibrationEnabled }) => {
     const [dimensions, setDimensions] = useState(Dimensions.get('window'));
     const [volume, setVolume] = useState(0.5);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const styles = mathSettingsStyles(dimensions);
+    const modalStyles = mathModalStyles(dimensions);
 
     useEffect(() => {
         AsyncStorage.getItem('volumeValue')
@@ -27,158 +33,55 @@ const ChickenSettingsScreen = ({ setSelectedTimeChroniclesPage, chickenNotifEnab
             .catch(error => console.error('Error loading volumeValue from AsyncStorage:', error));
     }, []);
 
+    const clearAsyncStorage = async () => {
+        try {
+            await AsyncStorage.clear();
+            RNRestart.Restart();
+            console.log('AsyncStorage очищено');
+        } catch (error) {
+            console.error('Помилка при очищенні AsyncStorage', error);
+        }
+    };
+
     return (
         <SafeAreaView style={{ width: dimensions.width, height: dimensions.height }}>
-            <Text
-                style={{
-                    color: 'black',
-                    textAlign: 'center',
-                    fontSize: dimensions.width * 0.065,
-                    fontWeight: 500,
-                    alignSelf: 'center',
-                    fontFamily: fontKronaOneRegular,
-                }}>
-                Settings
-            </Text>
-
             <View style={{
-                width: dimensions.width * 0.898,
+                width: dimensions.width * 0.931,
+                height: dimensions.height * 0.75,
                 alignSelf: 'center',
                 alignItems: 'center',
-                backgroundColor: 'white',
-                borderRadius: dimensions.width * 0.05551,
-                paddingVertical: dimensions.height * 0.050101,
+                backgroundColor: '#FFE066',
+                borderRadius: dimensions.width * 0.03,
+                borderWidth: dimensions.width * 0.003,
+                borderColor: 'black',
+                paddingVertical: dimensions.height * 0.01,
                 paddingHorizontal: dimensions.width * 0.05,
-                marginTop: dimensions.height * 0.1,
+                marginTop: dimensions.height * 0.03,
             }}>
                 <View style={{
                     flexDirection: 'row',
                     alignItems: 'center',
-                    justifyContent: 'space-between',
+                    justifyContent: 'flex-start',
+                    width: '100%',
+                    marginBottom: dimensions.height * 0.03,
                 }}>
-                    <Text
+                    <Image
+                        source={require('../assets/images/mathSettingsButton.png')}
                         style={{
-                            color: 'black',
-                            textAlign: 'left',
-                            fontSize: dimensions.width * 0.05,
-                            fontWeight: 500,
-                            fontFamily: fontKronaOneRegular,
-                            flex: 1,
-                        }}>
-                        Notification:
-                    </Text>
-
-                    <TouchableOpacity
-                        onPress={async () => {
-                            const newValue = !chickenNotifEnabled;
-                            setChickenNotifEnabled(newValue);
-                            try {
-                                await AsyncStorage.setItem('chickenNotifEnabled', newValue.toString());
-                            } catch (error) {
-                                console.error('Error updating chickenNotifEnabled in AsyncStorage:', error);
-                            }
+                            width: dimensions.width * 0.3,
+                            height: dimensions.height * 0.15,
+                            marginRight: dimensions.width * 0.05,
                         }}
-                        style={{
-                            width: dimensions.width * 0.18,
-                            height: dimensions.height * 0.034,
-                            borderRadius: dimensions.width * 0.525252,
-                            borderWidth: dimensions.width * 0.003,
-                            borderColor: 'black',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
-                        }}>
-                        {!chickenNotifEnabled && (
-                            <Text
-                                style={{
-                                    color: 'black',
-                                    textAlign: 'left',
-                                    fontSize: dimensions.width * 0.04,
-                                    fontWeight: 500,
-                                    fontFamily: fontKronaOneRegular,
-                                    paddingLeft: dimensions.width * 0.02,
-                                }}>
-                                on
-                            </Text>
-                        )}
-                        <View style={{
-                            width: dimensions.height * 0.034,
-                            height: dimensions.height * 0.034,
-                            borderRadius: dimensions.width * 0.5,
-                            backgroundColor: 'black',
-                        }} />
-
-                        {chickenNotifEnabled && (
-                            <Text
-                                style={{
-                                    color: 'black',
-                                    textAlign: 'left',
-                                    fontSize: dimensions.width * 0.04,
-                                    fontWeight: 500,
-                                    fontFamily: fontKronaOneRegular,
-                                    marginRight: dimensions.width * 0.016,
-                                }}>
-                                off
-                            </Text>
-                        )}
-                    </TouchableOpacity>
-                </View>
-
-                <View style={{
-                    marginVertical: dimensions.height * 0.05,
-                    width: '100%'
-                }}>
-                    <Text
-                        style={{
-                            color: 'black',
-                            textAlign: 'left',
-                            fontSize: dimensions.width * 0.05,
-                            alignSelf: 'flex-start',
-                            fontWeight: 500,
-                            fontFamily: fontKronaOneRegular,
-                            marginVertical: dimensions.height * 0.05,
-                        }}>
-                        Run difficulty:
-                    </Text>
-
-                    <Slider
-                        style={{ width: dimensions.width * 0.8, height: 40 }}
-                        minimumValue={0}
-                        maximumValue={1}
-                        value={volume}
-                        onValueChange={(val) => {
-                            setVolume(val);
-                        }}
-                        onSlidingComplete={async (val) => {
-                            try {
-                                await AsyncStorage.setItem('volumeValue', val.toString());
-                            } catch (error) {
-                                console.error('Error updating volume in AsyncStorage:', error);
-                            }
-                        }}
-                        minimumTrackTintColor="#000000"
-                        maximumTrackTintColor="#A4A4A4"
-                        thumbTintColor="#000000"
+                        resizeMode="contain"
                     />
-                </View>
-
-                <View style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                }}>
-                    <Text
-                        style={{
-                            color: 'black',
-                            textAlign: 'left',
-                            fontSize: dimensions.width * 0.05,
-                            fontWeight: 500,
-                            fontFamily: fontKronaOneRegular,
-                            flex: 1,
-                        }}>
-                        Vibration:
+                    <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.1 }]}>
+                        Settings
                     </Text>
-
+                </View>
+                <View style={styles.flexRowStyles}>
+                    <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.08 }]}>
+                        Vibration
+                    </Text>
                     <TouchableOpacity
                         onPress={async () => {
                             const newValue = !chickenVibrationEnabled;
@@ -188,86 +91,202 @@ const ChickenSettingsScreen = ({ setSelectedTimeChroniclesPage, chickenNotifEnab
                             } catch (error) {
                                 console.error('Error updating chickenVibroEnabled in AsyncStorage:', error);
                             }
-                        }}
-                        style={{
-                            width: dimensions.width * 0.18,
-                            height: dimensions.height * 0.034,
-                            borderRadius: dimensions.width * 0.525252,
-                            borderWidth: dimensions.width * 0.003,
-                            borderColor: 'black',
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'space-between',
                         }}>
-                        {!chickenVibrationEnabled && (
-                            <Text
-                                style={{
-                                    color: 'black',
-                                    textAlign: 'left',
-                                    fontSize: dimensions.width * 0.04,
-                                    fontWeight: 500,
-                                    fontFamily: fontKronaOneRegular,
-                                    paddingLeft: dimensions.width * 0.02,
-                                }}>
-                                on
-                            </Text>
-                        )}
-                        <View style={{
-                            width: dimensions.height * 0.034,
-                            height: dimensions.height * 0.034,
-                            borderRadius: dimensions.width * 0.5,
-                            backgroundColor: 'black',
-                        }} />
-
-                        {chickenVibrationEnabled && (
-                            <Text
-                                style={{
-                                    color: 'black',
-                                    textAlign: 'left',
-                                    fontSize: dimensions.width * 0.04,
-                                    fontWeight: 500,
-                                    fontFamily: fontKronaOneRegular,
-                                    marginRight: dimensions.width * 0.016,
-                                }}>
-                                off
-                            </Text>
-                        )}
+                        <Image
+                            source={chickenVibrationEnabled
+                                ? require('../assets/icons/settingsIcons/vibroOn.png')
+                                : require('../assets/icons/settingsIcons/vibroOff.png')}
+                            style={{
+                                width: dimensions.height * 0.06,
+                                height: dimensions.height * 0.06,
+                            }}
+                            resizeMode='contain'
+                        />
                     </TouchableOpacity>
                 </View>
-            </View>
-
-            <TouchableOpacity
-                onPress={() => {
-                    setSelectedTimeChroniclesPage('Home');
-                }}
-                style={{
-                    backgroundColor: 'white',
-                    alignSelf: 'center',
-                    width: dimensions.width * 0.75,
-                    alignItems: 'center',
-                    height: dimensions.height * 0.0754,
-                    borderRadius: dimensions.width * 0.1111111,
-                    borderWidth: dimensions.width * 0.003,
-                    borderColor: 'black',
-                    marginBottom: dimensions.height * 0.05,
-                    justifyContent: 'center',
-                    position: 'absolute',
-                    bottom: dimensions.height * 0.05,
-                }}>
-                <Text
+                <View style={styles.flexRowStyles}>
+                    <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.08 }]}>
+                        Music
+                    </Text>
+                    <TouchableOpacity
+                        onPress={async () => {
+                            const newValue = !chickenNotifEnabled;
+                            setChickenNotifEnabled(newValue);
+                            try {
+                                await AsyncStorage.setItem('chickenNotifEnabled', newValue.toString());
+                            } catch (error) {
+                                console.error('Error updating chickenNotifEnabled in AsyncStorage:', error);
+                            }
+                        }}>
+                        <Image
+                            source={chickenNotifEnabled
+                                ? require('../assets/icons/settingsIcons/musicOn.png')
+                                : require('../assets/icons/settingsIcons/musicOff.png')}
+                            style={{
+                                width: dimensions.height * 0.06,
+                                height: dimensions.height * 0.06,
+                            }}
+                            resizeMode='contain'
+                        />
+                    </TouchableOpacity>
+                </View>
+                <TouchableOpacity
+                    onPress={() => {
+                        setIsModalVisible(true);
+                    }}
+                    style={styles.flexRowStyles}>
+                    <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.08 }]}>
+                        Reset Progress
+                    </Text>
+                    <Image
+                        source={require('../assets/icons/settingsIcons/resetMathProgress.png')}
+                        style={{
+                            width: dimensions.height * 0.06,
+                            height: dimensions.height * 0.06,
+                        }}
+                        resizeMode='contain'
+                    />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        Share.share({
+                            message: 'You can upgrade your math skils with Math With Chickens!'
+                        })
+                            .then((result) => console.log(result))
+                            .catch((error) => console.log('Error sharing:', error));
+                    }}
+                    style={styles.flexRowStyles}>
+                    <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.08 }]}>
+                        Share app
+                    </Text>
+                    <Image
+                        source={require('../assets/icons/settingsIcons/shareMathApp.png')}
+                        style={{
+                            width: dimensions.height * 0.06,
+                            height: dimensions.height * 0.06,
+                        }}
+                        resizeMode='contain'
+                    />
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => {
+                        setSelectedMathWithScreen('Home');
+                    }}
                     style={{
-                        color: 'black',
-                        textAlign: 'center',
-                        fontSize: dimensions.width * 0.065,
-                        fontWeight: 700,
-                        alignSelf: 'center',
-                        fontFamily: fontKronaOneRegular,
+                        position: 'absolute',
+                        bottom: '3%',
+                        right: '5%',
                     }}>
-                    Back Home
-                </Text>
-            </TouchableOpacity>
+                    <Image
+                        source={require('../assets/icons/goHomeMathIcon.png')}
+                        style={{
+                            width: dimensions.height * 0.08,
+                            height: dimensions.height * 0.08,
+                        }}
+                        resizeMode='contain'
+                    />
+                </TouchableOpacity>
+            </View>
+            <Modal
+                animationType="fade"
+                transparent={true}
+                visible={isModalVisible}
+                onRequestClose={() => setIsModalVisible(false)}
+            >
+                <View style={modalStyles.centeredView}>
+                    <View style={modalStyles.modalView}>
+                        <Image
+                            source={require('../assets/images/sadChicken.png')}
+                            style={{
+                                width: dimensions.width * 0.4,
+                                height: dimensions.height * 0.2,
+                                marginTop: -dimensions.height * 0.04,
+                            }}
+                            resizeMode="contain"
+                        />
+                        <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.06 }]}>
+                            Do you want to reset your progress
+                        </Text>
+                        <View style={[styles.flexRowStyles, { marginTop: dimensions.height * 0.03 }]}>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    clearAsyncStorage();
+                                    setIsModalVisible(false);
+                                }}
+                                style={[modalStyles.mathCancelConfirmButtons, {
+                                    backgroundColor: '#FF7D05',
+                                }]}>
+                                <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.08 }]}>
+                                    Yes
+                                </Text>
+                            </TouchableOpacity>
+
+                            <TouchableOpacity
+                                onPress={() => setIsModalVisible(false)}
+                                style={[modalStyles.mathCancelConfirmButtons, {
+                                    backgroundColor: '#0AFF05',
+                                }]}>
+                                <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.08 }]}>
+                                    No
+                                </Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
         </SafeAreaView>
     );
 };
+
+const mathSettingsStyles = (dimensions) => StyleSheet.create({
+    flexRowStyles: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+        width: '100%',
+        marginBottom: dimensions.height * 0.01,
+    },
+    ranchesTextStyles: {
+        color: '#5C4033',
+        textAlign: 'center',
+        alignSelf: 'center',
+        fontFamily: fontRanchersRegular,
+    }
+});
+
+const mathModalStyles = (dimensions) => StyleSheet.create({
+    centeredView: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: 'rgba(0,0,0,0.5)'
+    },
+    modalView: {
+        width: '95%',
+        backgroundColor: "#FFE066",
+        borderColor: "black",
+        borderWidth: dimensions.width * 0.003,
+        borderRadius: dimensions.width * 0.03,
+        padding: 35,
+        alignItems: "center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+    },
+    mathCancelConfirmButtons: {
+        width: dimensions.width * 0.3,
+        height: dimensions.height * 0.08,
+        borderRadius: dimensions.width * 0.03,
+        borderWidth: dimensions.width * 0.003,
+        borderColor: 'black',
+        justifyContent: 'center',
+        alignItems: 'center',
+    }
+});
 
 export default ChickenSettingsScreen;
