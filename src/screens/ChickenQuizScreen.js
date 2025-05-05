@@ -6,18 +6,15 @@ import {
     SafeAreaView,
     TouchableOpacity,
     Image,
-    Share,
     Modal,
     StyleSheet
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ArrowLeftIcon } from 'react-native-heroicons/solid';
 
-import chickenQuestionsData from '../components/chickenQuestionsData';
+import mathQuizQuestions from '../components/mathQuizQuestions';
 
 const fontKronaOneRegular = 'KronaOne-Regular';
-const fontRammetoOneRegular = 'RammettoOne-Regular';
 const fontRanchersRegular = 'Ranchers-Regular';
 
 const roadMathEggLevels = [
@@ -61,7 +58,6 @@ const roadMathEggLevels = [
 
 const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
     const [dimensions, setDimensions] = useState(Dimensions.get('window'));
-    const [eggBalance, setEggBalance] = useState(0);
     const styles = createChickenQuizStyles(dimensions);
 
     const [mathQuizPreviewModalVisible, setMathQuizPreviewModalVisible] = useState(true);
@@ -70,16 +66,13 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
     const [positiveMathQuizAnswersAmount, setPositiveMathQuizAnswersAmount] = useState(0);
     const modalStyles = mathModalStyles(dimensions);
 
-    const [isChickenQuizStarted, setIsChickenQuizStarted] = useState(false);
-    const [currentIndexOfChickenSlide, setCurrentIndexOfChickenSlide] = useState(0);
-    const [todayChickenQuestionsData, setTodayChickenQuestionsData] = useState([]);
-    const [choosenChickenAnswer, setChoosenChickenAnswer] = useState(null);
-    const [currentChickenQuizQuestionIndex, setCurrentChickenQuizQuestionIndex] = useState(0);
-    const [isChickenAnswerGiven, setIsChickenAnswerGiven] = useState(false);
-    const [isChickenAnswerButtonsActive, setIsChickenAnswerButtonsActive] = useState(true);
-    const [isChickenQuizFinished, setIsChickenQuizFinished] = useState(false);
-
-    const [quizEggs, setQuizEggs] = useState(0);
+    const [isMathQuizWithStarted, setMathQuizWithStarted] = useState(false);
+    const [mathQuestionsForLevel, setMathQuestionsForLevel] = useState([]);
+    const [selectedMathAnswerWith, setSelectedMathAnswerWith] = useState(null);
+    const [curMathQuizWithQuestionInd, setCurMathQuizWithQuestionInd] = useState(0);
+    const [isMathQuizAnswered, setMathQuizAnswered] = useState(false);
+    const [isMathAnswerButtonPressible, setMathAnswerButtonPressible] = useState(true);
+    const [isMathQuizWithFinished, setMathQuizWithFinished] = useState(false);
 
     useEffect(() => {
         const loadMathLevels = async () => {
@@ -97,60 +90,31 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
         loadMathLevels();
     }, []);
 
-    const handleChickenToAnswer = (selectedMathAnswer) => {
-        setIsChickenAnswerGiven(true);
-        setIsChickenAnswerButtonsActive(false);
+    const handleMathAnswerQuiz = (selectedMathAnswer) => {
+        setMathAnswerButtonPressible(false);
+
+        setMathQuizAnswered(true);
 
         setTimeout(() => {
-            setIsChickenAnswerGiven(false);
-            setIsChickenAnswerButtonsActive(true);
-            setChoosenChickenAnswer(null);
-            if (currentChickenQuizQuestionIndex === todayChickenQuestionsData.length - 1) {
-                setIsChickenQuizFinished(true);
-            } else setCurrentChickenQuizQuestionIndex(prev => prev + 1);
-        }, 2000)
+            setMathAnswerButtonPressible(true);
+            setSelectedMathAnswerWith(null);
+            setMathQuizAnswered(false);
+            if (curMathQuizWithQuestionInd === mathQuestionsForLevel.length - 1) {
+                setMathQuizWithFinished(true);
+            } else setCurMathQuizWithQuestionInd(prev => prev + 1);
+        }, 1000)
 
-        if (selectedMathAnswer.isMathCorrectResult) setPositiveMathQuizAnswersAmount(prev => prev + 1);
+        if (selectedMathAnswer.isMathCorrectResult)
+            setPositiveMathQuizAnswersAmount(prev => prev + 1);
     };
 
     useEffect(() => {
-        setTodayChickenQuestionsData(chickenQuestionsData.filter(item => item.levelID === selectedMathQuizLevel)[0].questions);
+        setMathQuestionsForLevel(mathQuizQuestions.filter(item => item.levelID === selectedMathQuizLevel)[0].questions);
     }, []);
 
     useEffect(() => {
-        const loadMathLevels = async () => {
-            try {
-                const storedEggBalance = await AsyncStorage.getItem('eggBalance');
-                if (storedEggBalance !== null) {
-                    setEggBalance(parseInt(storedEggBalance));
-                }
-            } catch (error) {
-                console.error('Error loading data from AsyncStorage:', error);
-            }
-        };
-        loadMathLevels();
-    }, []);
-
-    useEffect(() => {
-        const completeTest = async () => {
-            try {
-                const newEggBalance = eggBalance + quizEggs;
-                await AsyncStorage.setItem('eggBalance', newEggBalance.toString());
-                setEggBalance(newEggBalance);
-                const currentTime = new Date().toISOString();
-                await AsyncStorage.setItem('testCompleted', currentTime);
-            } catch (error) {
-                console.error('Error saving data after test completion:', error);
-            }
-        };
-        if (isChickenQuizFinished) {
-            completeTest();
-        }
-    }, [isChickenQuizFinished]);
-
-    useEffect(() => {
-        const updateOwnedChickenLevels = async () => {
-            if (selectedMathQuizLevel < 7 && isChickenQuizFinished && positiveMathQuizAnswersAmount === 4 && !ownedMathQuizLevels.includes(selectedMathQuizLevel + 1)) {
+        const updateMathOwnedLevelsWith = async () => {
+            if (selectedMathQuizLevel < 7 && isMathQuizWithFinished && positiveMathQuizAnswersAmount === 4 && !ownedMathQuizLevels.includes(selectedMathQuizLevel + 1)) {
                 try {
                     const storedMathQuizLevels = await AsyncStorage.getItem('ownedMathQuizLevels');
                     let mathQuizLevels = storedMathQuizLevels ? JSON.parse(storedMathQuizLevels) : [1];
@@ -161,17 +125,19 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
                         setOwnedMathQuizLevels(mathQuizLevels);
                     }
                 } catch (error) {
-                    console.error('Failed to update owned chicken mathQuizLevels of run:', error);
+                    console.error('Failed to update owned mathQuizLevels:', error);
                 }
             }
         };
-
-        updateOwnedChickenLevels();
-    }, [isChickenQuizFinished]);
+        updateMathOwnedLevelsWith();
+    }, [isMathQuizWithFinished]);
 
     return (
-        <SafeAreaView style={{ width: dimensions.width, height: dimensions.height }}>
-            {!isChickenQuizStarted && !isChickenQuizFinished ? (
+        <SafeAreaView style={{
+            height: dimensions.height,
+            width: dimensions.width,
+        }}>
+            {!isMathQuizWithStarted && !isMathQuizWithFinished ? (
                 <>
                     <Image
                         source={require('../assets/images/quizRoadBg.png')}
@@ -197,9 +163,9 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
                             key={index}
                             onPress={() => {
                                 setSelectedMathQuizLevel(eggLevel.id);
-                                setIsChickenQuizStarted(true);
-                                setCurrentChickenQuizQuestionIndex(0);
-                                setIsChickenQuizFinished(false);
+                                setMathQuizWithStarted(true);
+                                setCurMathQuizWithQuestionInd(0);
+                                setMathQuizWithFinished(false);
                             }}
                             disabled={!ownedMathQuizLevels.includes(eggLevel.id)}
                             activeOpacity={0.7}
@@ -258,7 +224,7 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
                         />
                     </TouchableOpacity>
                 </>
-            ) : isChickenQuizStarted && !isChickenQuizFinished ? (
+            ) : isMathQuizWithStarted && !isMathQuizWithFinished ? (
                 <>
                     <View style={{
                         width: '100%',
@@ -293,7 +259,7 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
                                 justifyContent: 'center',
                             }}>
                                 <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.1 }]}>
-                                    {todayChickenQuestionsData[currentChickenQuizQuestionIndex].mathQuestion}
+                                    {mathQuestionsForLevel[curMathQuizWithQuestionInd].mathQuestion}
                                 </Text>
                             </View>
                         </View>
@@ -306,23 +272,23 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
                             alignItems: 'center',
                             justifyContent: 'center',
                         }}>
-                            {todayChickenQuestionsData[currentChickenQuizQuestionIndex].mathAnswers.map((mathAnswer, index) => {
+                            {mathQuestionsForLevel[curMathQuizWithQuestionInd].mathAnswers.map((mathAnswer, index) => {
                                 let buttonBackground = '#FFE066';
-                                if (isChickenAnswerGiven) {
+                                if (isMathQuizAnswered) {
                                     if (mathAnswer.isMathCorrectResult) {
                                         buttonBackground = '#0AFF05';
-                                    } else if (choosenChickenAnswer && choosenChickenAnswer.mathAnswer === mathAnswer.mathAnswer) {
+                                    } else if (selectedMathAnswerWith && selectedMathAnswerWith.mathAnswer === mathAnswer.mathAnswer) {
                                         buttonBackground = '#FF2828';
                                     }
                                 }
                                 return (
                                     <TouchableOpacity
                                         key={index}
-                                        disabled={!isChickenAnswerButtonsActive}
+                                        disabled={!isMathAnswerButtonPressible}
                                         onPress={() => {
-                                            if (!isChickenAnswerGiven) {
-                                                setChoosenChickenAnswer(mathAnswer);
-                                                handleChickenToAnswer(mathAnswer);
+                                            if (!isMathQuizAnswered) {
+                                                setSelectedMathAnswerWith(mathAnswer);
+                                                handleMathAnswerQuiz(mathAnswer);
                                                 console.log('Selected answer:', mathAnswer);
                                             }
                                         }}
@@ -346,6 +312,35 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
                             })}
                         </View>
                     </View>
+
+                    <TouchableOpacity
+                        onPress={() => {
+                            setMathQuizWithStarted(false);
+                            setMathQuizWithFinished(false);
+                            setCurMathQuizWithQuestionInd(0);
+                            setPositiveMathQuizAnswersAmount(0);
+                        }}
+                        style={{
+                            alignSelf: 'center',
+                            backgroundColor: '#FFE066',
+                            borderRadius: dimensions.width * 0.8,
+                            width: dimensions.height * 0.1,
+                            height: dimensions.height * 0.1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            position: 'absolute',
+                            bottom: dimensions.height * 0.1,
+                        }}>
+                        <Image
+                            source={require('../assets/icons/goHomeMathIcon.png')}
+                            style={{
+                                width: dimensions.height * 0.07,
+                                height: dimensions.height * 0.07,
+                                alignSelf: 'center',
+                            }}
+                            resizeMode='contain'
+                        />
+                    </TouchableOpacity>
                 </>
             ) : (
                 <>
@@ -358,9 +353,13 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
                         padding: dimensions.width * 0.04,
                         alignSelf: 'center',
                         marginTop: dimensions.height * 0.03,
+                        paddingBottom: dimensions.height * 0.05,
                     }}>
                         <Image
-                            source={require('../assets/images/successfullyBoughtChicken.png')}
+                            source={positiveMathQuizAnswersAmount === 4
+                                ? require('../assets/images/positiveChicken.png')
+                                : require('../assets/images/sadChicken.png')
+                            }
                             style={{
                                 width: dimensions.width * 0.4,
                                 height: dimensions.height * 0.23,
@@ -371,32 +370,108 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
 
 
                         <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.1 }]}>
-                            Well done!
+                            {positiveMathQuizAnswersAmount === 4 ? 'Well done!' : 'You loose!'}
                         </Text>
 
                         <Text style={[styles.ranchesTextStyles, { fontSize: dimensions.width * 0.05, marginTop: dimensions.height * 0.02 }]}>
-                        Next level is unlocked! {'\n'}New egg added to game mode!
+                            {positiveMathQuizAnswersAmount === 4 ? 'Next level is unlocked! \nNew egg added to game mode!' : `Your result is ${positiveMathQuizAnswersAmount}/4`}
                         </Text>
                     </View>
 
+                    {positiveMathQuizAnswersAmount === 4 && (
+                        <View>
+                            <Text style={[styles.ranchesTextStyles,
+                            {
+                                fontSize: dimensions.width * 0.19,
+                                position: 'absolute',
+                                alignSelf: 'center',
+                                top: '25%',
+                                zIndex: 10,
+                                color: 'black',
+                            }]}>
+                                {selectedMathQuizLevel < 7 ? selectedMathQuizLevel + 1 : 7}
+                            </Text>
+
+                            <Image
+                                source={require('../assets/images/yellowMathEgg.png')}
+                                style={{
+                                    width: dimensions.height * 0.13,
+                                    height: dimensions.height * 0.13,
+                                    alignSelf: 'center',
+                                    marginTop: dimensions.height * 0.03,
+                                }}
+                                resizeMode='contain'
+                            />
+                        </View>
+                    )}
+
                     <TouchableOpacity
                         onPress={() => {
-                            setSelectedMathWithScreen('Home');
+                            if (positiveMathQuizAnswersAmount === 4) {
+                                setMathQuizWithStarted(false);
+                                setMathQuizWithFinished(false);
+                                setCurMathQuizWithQuestionInd(0);
+                                setPositiveMathQuizAnswersAmount(0);
+                            } else {
+                                setMathQuizWithStarted(true);
+                                setMathQuizWithFinished(false);
+                                setCurMathQuizWithQuestionInd(0);
+                                setPositiveMathQuizAnswersAmount(0);
+                            }
                         }}
-                        style={styles.bottomButton}
-                    >
-                        <Text
+                        style={{
+                            alignSelf: 'center',
+                            marginTop: dimensions.height * 0.12,
+                            backgroundColor: '#FFE066',
+                            borderRadius: dimensions.width * 0.8,
+                            width: dimensions.height * 0.1,
+                            height: dimensions.height * 0.1,
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                        }}>
+                        <Image
+                            source={positiveMathQuizAnswersAmount === 4
+                                ? require('../assets/icons/goHomeMathIcon.png')
+                                : require('../assets/icons/settingsIcons/resetMathProgress.png')
+                            }
                             style={{
-                                textAlign: 'center',
-                                color: 'black',
-                                fontFamily: fontKronaOneRegular,
-                                fontWeight: 700,
-                                paddingHorizontal: dimensions.width * 0.05,
-                                fontSize: dimensions.width * 0.06,
-                            }}>
-                            Back to menu
-                        </Text>
+                                width: dimensions.height * 0.07,
+                                height: dimensions.height * 0.07,
+                                alignSelf: 'center',
+                            }}
+                            resizeMode='contain'
+                        />
                     </TouchableOpacity>
+
+                    {positiveMathQuizAnswersAmount < 4 && (
+                        <TouchableOpacity
+                            onPress={() => {
+                                setMathQuizWithStarted(false);
+                                setMathQuizWithFinished(false);
+                                setCurMathQuizWithQuestionInd(0);
+                                setPositiveMathQuizAnswersAmount(0);
+                            }}
+                            style={{
+                                alignSelf: 'center',
+                                marginTop: dimensions.height * 0.03,
+                                backgroundColor: '#FFE066',
+                                borderRadius: dimensions.width * 0.8,
+                                width: dimensions.height * 0.1,
+                                height: dimensions.height * 0.1,
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                            }}>
+                            <Image
+                                source={require('../assets/icons/goHomeMathIcon.png')}
+                                style={{
+                                    width: dimensions.height * 0.07,
+                                    height: dimensions.height * 0.07,
+                                    alignSelf: 'center',
+                                }}
+                                resizeMode='contain'
+                            />
+                        </TouchableOpacity>
+                    )}
                 </>
             )}
 
