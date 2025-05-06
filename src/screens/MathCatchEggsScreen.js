@@ -9,6 +9,7 @@ import {
   Animated,
   Modal,
   StyleSheet,
+  Platform,
 } from 'react-native';
 
 import ReactNativeHapticFeedback from "react-native-haptic-feedback";
@@ -161,6 +162,7 @@ const MathCatchEggsScreen = ({ setSelectedMathWithScreen, vibroMathEnabled }) =>
             shadowOpacity: 0.25,
             shadowRadius: 4,
             elevation: 5,
+            marginTop: Platform.OS === 'android' ? dimensions.height * 0.03 : 0,
           }}>
             <View style={{
               flexDirection: 'row',
@@ -281,7 +283,7 @@ const MathCatchEggsScreen = ({ setSelectedMathWithScreen, vibroMathEnabled }) =>
                       setCatchedEggsModalVisible(true);
 
                       if (vibroMathEnabled) {
-                        ReactNativeHapticFeedback.trigger("impactLight", {
+                        ReactNativeHapticFeedback.trigger(currentSumm + item.itemPoints === targetSumm ? "impactLight" : "impactMedium", {
                           enableVibrateFallback: true,
                           ignoreAndroidSystemSettings: false,
                         });
@@ -316,9 +318,10 @@ const MathCatchEggsScreen = ({ setSelectedMathWithScreen, vibroMathEnabled }) =>
               alignItems: 'center',
               justifyContent: 'center',
               position: 'absolute',
-              bottom: dimensions.height * 0.19,
+              bottom: Platform.OS === 'android' ? dimensions.height * 0.104 : dimensions.height * 0.19,
               right: dimensions.width * 0.05,
-              zIndex: 5555
+              zIndex: 5555,
+              opacity: catchedEggsModalVisible ? 0 : 1,
             }}
           >
             <Image

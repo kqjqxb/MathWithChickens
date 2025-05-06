@@ -152,7 +152,7 @@ const MathSettingsWithScreen = ({ setSelectedMathWithScreen, mathWithMusicEnable
                 <TouchableOpacity
                     onPress={() => {
                         Share.share({
-                            message: `You can upgrade your math skils with chickens!\n${mathApp}`,
+                            message: `You can upgrade your math skils with funny chickens!\n${mathApp}`,
                         })
                             .then((result) => console.log(result))
                             .catch((error) => console.log('Error sharing:', error));

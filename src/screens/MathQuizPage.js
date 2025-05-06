@@ -7,7 +7,8 @@ import {
     TouchableOpacity,
     Image,
     Modal,
-    StyleSheet
+    StyleSheet,
+    Platform
 } from 'react-native';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -50,14 +51,14 @@ const roadMathEggLevels = [
     },
     {
         id: 6,
-        right: '55%',
-        top: '75%',
+        right: '64%',
+        top: '73%',
         image: require('../assets/images/catchEggImages/egg6.png'),
     },
     {
         id: 7,
         right: '39%',
-        top: '86%',
+        top: Platform.OS === 'android' ? '82%' : '86%',
         image: require('../assets/images/catchEggImages/egg7.png'),
     },
 ]
@@ -151,14 +152,15 @@ const MathQuizPage = ({ setSelectedMathWithScreen, }) => {
                         style={{
                             position: 'absolute',
                             width: dimensions.width,
-                            height: dimensions.height * 0.8,
+                            height: Platform.OS === 'android' ? dimensions.height * 0.86 : dimensions.height * 0.8,
                             alignSelf: 'center',
                             top: dimensions.height * 0.1,
-                            zIndex: -1,
+                            zIndex: 0,
                             borderRadius: dimensions.width * 0.03,
                             borderWidth: dimensions.width * 0.003,
                             borderColor: 'black',
                         }}
+                        resizeMode='cover'
                     />
 
                     {roadMathEggLevels.map((eggLevel, index) => (

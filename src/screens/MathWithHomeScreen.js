@@ -6,6 +6,7 @@ import {
   Dimensions,
   SafeAreaView,
   Text,
+  Platform,
 } from 'react-native';
 
 import MathSettingsWithScreen from './MathSettingsWithScreen';
@@ -17,8 +18,6 @@ import { useAudio } from '../context/AudioContext';
 import MathCatchEggsScreen from './MathCatchEggsScreen';
 import MathAchievmentsScreen from './MathAchievmentsScreen';
 
-
-const fontRammetoOneRegular = 'RammettoOne-Regular';
 const fontRanchersRegular = 'Ranchers-Regular';
 
 const mainYellowButtons = [
@@ -48,8 +47,8 @@ const mainYellowButtons = [
 const MathWithHomeScreen = () => {
   const [dimensions, setDimensions] = useState(Dimensions.get('window'));
   const [selectedMathWithScreen, setSelectedMathWithScreen] = useState('Home');
-  const [mathWithMusicEnabled, setMathWithMusicEnabled] = useState(false);
-  const [vibroMathEnabled, setVibroMathEnabled] = useState(false);
+  const [mathWithMusicEnabled, setMathWithMusicEnabled] = useState(true);
+  const [vibroMathEnabled, setVibroMathEnabled] = useState(true);
 
   const { volume } = useAudio();
   const [mathWithIndOfTrack, setMathWithIndOfTrack] = useState(0);
@@ -132,6 +131,7 @@ const MathWithHomeScreen = () => {
         <SafeAreaView style={{
           flex: 1,
           alignItems: 'center',
+          marginTop: Platform.OS === 'android' ? dimensions.height * 0.03 : 0,
         }}>
           {mainYellowButtons.map((mathButton, index) => (
             <TouchableOpacity
