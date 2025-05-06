@@ -7,17 +7,17 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const loadChickenUserRunner = async () => {
+    const loadUserOfMathWith = async () => {
       try {
-        const storedChickenUserRunner = await AsyncStorage.getItem('currentUser');
-        if (storedChickenUserRunner) {
-          setUser(JSON.parse(storedChickenUserRunner));
+        const storedMathWithUser = await AsyncStorage.getItem('currentUser');
+        if (storedMathWithUser) {
+          setUser(JSON.parse(storedMathWithUser));
         }
       } catch (error) {
-        console.error('Error loading storedChickenUserRunner user:', error);
+        console.error('Error loading storedMathWithUser user:', error);
       }
     };
-    loadChickenUserRunner();
+    loadUserOfMathWith();
   }, []);
 
   return (

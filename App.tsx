@@ -1,8 +1,8 @@
 import React from 'react';
-import ChickenRunStack from './StackNavigator';
+import MathWithStack from './StackNavigator';
 
 function App() {
-  return <ChickenRunStack />;
+  return <MathWithStack />;
 }
 
 export default App;

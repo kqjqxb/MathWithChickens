@@ -11,6 +11,8 @@ import {
   StyleSheet,
 } from 'react-native';
 
+import ReactNativeHapticFeedback from "react-native-haptic-feedback";
+
 const colorEggs = [
   {
     id: 1,
@@ -61,7 +63,7 @@ const colorEggs = [
 
 const fontRanchersRegular = 'Ranchers-Regular';
 
-const MathCatchEggsScreen = ({ setSelectedMathWithScreen }) => {
+const MathCatchEggsScreen = ({ setSelectedMathWithScreen, vibroMathEnabled }) => {
   const [dimensions] = useState(Dimensions.get('window'));
 
   const [eggFallingObjects, setEggFallingObjects] = useState([]);
@@ -277,6 +279,13 @@ const MathCatchEggsScreen = ({ setSelectedMathWithScreen }) => {
                     setCurrentSumm((prev) => prev + item.itemPoints);
                     if (currentSumm + item.itemPoints >= targetSumm) {
                       setCatchedEggsModalVisible(true);
+
+                      if (vibroMathEnabled) {
+                        ReactNativeHapticFeedback.trigger("impactLight", {
+                          enableVibrateFallback: true,
+                          ignoreAndroidSystemSettings: false,
+                        });
+                      }
                     }
                     setEggFallingObjects((prev) => prev.filter((f) => f.id !== item.id));
                   }}

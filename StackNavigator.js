@@ -7,13 +7,13 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { UserProvider, UserContext } from './src/context/UserContext';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
-import ChickenRunLoadingScreen from './src/screens/ChickenRunLoadingScreen';
+import LoadingMathApp from './src/screens/LoadingMathApp';
 import MathOnboardingScreen from './src/screens/MathOnboardingScreen';
 import { AudioProvider } from './src/context/AudioContext';
 
 const Stack = createNativeStackNavigator();
 
-const ChickenRunStack = () => {
+const MathWithStack = () => {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Provider store={store}>
@@ -31,10 +31,10 @@ const AppNavigator = () => {
   return (
     <NavigationContainer>
       <AudioProvider>
-        <Stack.Navigator initialRouteName={'LoadPrideQuestScreen'}>
+        <Stack.Navigator initialRouteName={'LoadMathAppPage'}>
+          <Stack.Screen name="MathOnbPage" component={MathOnboardingScreen} options={{ headerShown: false }} />
+          <Stack.Screen name="LoadMathAppPage" component={LoadingMathApp} options={{ headerShown: false }} />
           <Stack.Screen name="MathWithHomeScreen" component={MathWithHomeScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="LoadPrideQuestScreen" component={ChickenRunLoadingScreen} options={{ headerShown: false }} />
-          <Stack.Screen name="ChickenRunOnboardingScreen" component={MathOnboardingScreen} options={{ headerShown: false }} />
         </Stack.Navigator>
       </AudioProvider>
     </NavigationContainer>
@@ -42,4 +42,4 @@ const AppNavigator = () => {
 };
 
 
-export default ChickenRunStack;
+export default MathWithStack;

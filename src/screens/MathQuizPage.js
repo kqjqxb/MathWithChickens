@@ -21,42 +21,49 @@ const roadMathEggLevels = [
     {
         id: 1,
         right: '10%',
-        top: '13%'
+        top: '13%',
+        image: require('../assets/images/catchEggImages/egg1.png'),
     },
     {
         id: 2,
         right: '30%',
-        top: '23%'
+        top: '23%',
+        image: require('../assets/images/catchEggImages/egg2.png'),
     },
     {
         id: 3,
         right: '25%',
-        top: '39%'
+        top: '39%',
+        image: require('../assets/images/catchEggImages/egg3.png'),
     },
     {
         id: 4,
         right: '15%',
-        top: '55%'
+        top: '55%',
+        image: require('../assets/images/catchEggImages/egg4.png'),
     },
     {
         id: 5,
         right: '32%',
-        top: '66%'
+        top: '66%',
+        image: require('../assets/images/catchEggImages/egg5.png'),
     },
     {
         id: 6,
         right: '55%',
-        top: '75%'
+        top: '75%',
+        image: require('../assets/images/catchEggImages/egg6.png'),
     },
     {
         id: 7,
         right: '39%',
-        top: '86%'
+        top: '86%',
+        image: require('../assets/images/catchEggImages/egg7.png'),
     },
 ]
 
 
-const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
+const MathQuizPage = ({ setSelectedMathWithScreen, }) => {
     const [dimensions, setDimensions] = useState(Dimensions.get('window'));
     const styles = createMathQuizStyles(dimensions);
 
@@ -109,8 +116,8 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
     };
 
     useEffect(() => {
-        setMathQuestionsForLevel(mathQuizQuestions.filter(item => item.levelID === selectedMathQuizLevel)[0].questions);
-    }, []);
+        setMathQuestionsForLevel(mathQuizQuestions[selectedMathQuizLevel - 1].questions);
+    }, [selectedMathQuizLevel]);
 
     useEffect(() => {
         const updateMathOwnedLevelsWith = async () => {
@@ -170,22 +177,9 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
                             disabled={!ownedMathQuizLevels.includes(eggLevel.id)}
                             activeOpacity={0.7}
                         >
-                            {ownedMathQuizLevels.includes(eggLevel.id) && (
-                                <Text style={[styles.ranchesTextStyles,
-                                {
-                                    fontSize: dimensions.width * 0.19,
-                                    position: 'absolute',
-                                    alignSelf: 'center',
-                                    top: '10%',
-                                    zIndex: 10,
-                                    color: 'black',
-                                }]}>
-                                    {eggLevel.id}
-                                </Text>
-                            )}
                             <Image
                                 source={ownedMathQuizLevels.includes(eggLevel.id)
-                                    ? require('../assets/images/yellowMathEgg.png')
+                                    ? eggLevel.image
                                     : require('../assets/images/silverMathEgg.png')}
                                 style={{
                                     width: dimensions.height * 0.13,
@@ -193,7 +187,6 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
                                 }}
                                 resizeMode='contain'
                             />
-
                         </TouchableOpacity>
                     ))}
 
@@ -580,4 +573,4 @@ const mathModalStyles = (dimensions) => StyleSheet.create({
     }
 });
 
-export default ChickenQuizScreen;
+export default MathQuizPage;

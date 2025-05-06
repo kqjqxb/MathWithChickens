@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { View, FlatList, Animated, Text, TouchableOpacity, Dimensions, Image, SafeAreaView } from 'react-native';
-import chickenOnboardingImagesData from '../components/chickenOnboardingImagesData';
+import onbMathData from '../components/onbMathData';
 import { useNavigation } from '@react-navigation/native';
 
 const fontRammetoOneRegular = 'RammettoOne-Regular';
@@ -13,6 +13,14 @@ const MathOnboardingScreen = () => {
   const mathHorizontallScrollRef = useRef(new Animated.Value(0)).current;
   const navigation = useNavigation();
 
+ 
+
+  const viewableItemsChanged = useRef(({ viewableItems }) => {
+    if (viewableItems && viewableItems.length > 0) {
+      setThisNathIndexSlide(viewableItems[0].index);
+    }
+  }).current;
+
   useEffect(() => {
     const onChange = ({ window }) => {
       setDimensions(window);
@@ -23,16 +31,10 @@ const MathOnboardingScreen = () => {
     };
   }, []);
 
-  const viewableItemsChanged = useRef(({ viewableItems }) => {
-    if (viewableItems && viewableItems.length > 0) {
-      setThisNathIndexSlide(viewableItems[0].index);
-    }
-  }).current;
-
   const viewConfig = useRef({ viewAreaCoveragePercentThreshold: 50 }).current;
 
   const handleNextMathSlide = () => {
-    if (thisNathIndexSlide >= chickenOnboardingImagesData.length - 1) {
+    if (thisNathIndexSlide >= onbMathData.length - 1) {
       navigation.replace('MathWithHomeScreen');
     } else {
       mathRefSlides.current.scrollToIndex({ index: thisNathIndexSlide + 1 });
@@ -42,9 +44,13 @@ const MathOnboardingScreen = () => {
   const mathItemRender = ({ item }) => (
     <View style={{
       flex: 1,
+
       alignItems: 'center',
+
       width: dimensions.width,
+
       justifyContent: 'space-between',
+
       height: dimensions.height,
     }}>
       <View style={{
@@ -56,21 +62,21 @@ const MathOnboardingScreen = () => {
           source={item.itemImage}
           style={{
             alignSelf: 'center',
-            marginTop: -dimensions.height * 0.05,
-            width: dimensions.width * 0.8,
             height: dimensions.height * 0.5,
+            width: dimensions.width * 0.8,
+            marginTop: -dimensions.height * 0.05,
           }}
           resizeMode="contain"
         />
 
         <Text
           style={{
+            color: 'white',
             textAlign: 'center',
             marginTop: -dimensions.height * 0.05,
-            fontFamily: fontRammetoOneRegular,
-            paddingHorizontal: dimensions.width * 0.05,
-            color: 'white',
             fontWeight: 700,
+            paddingHorizontal: dimensions.width * 0.05,
+            fontFamily: fontRammetoOneRegular,
             fontSize: dimensions.width * 0.06,
           }}>
           {item.mathMainText}
@@ -103,15 +109,15 @@ const MathOnboardingScreen = () => {
     >
       <View style={{ display: 'flex' }}>
         <FlatList
-          bounces={false}
-          horizontal
-          scrollEventThrottle={32}
           ref={mathRefSlides}
+          horizontal
           renderItem={mathItemRender}
+          scrollEventThrottle={32}
           showsHorizontalScrollIndicator={false}
           onViewableItemsChanged={viewableItemsChanged}
+          bounces={false}
           keyExtractor={(item) => item.id.toString()}
-          data={chickenOnboardingImagesData}
+          data={onbMathData}
           pagingEnabled
           viewabilityConfig={viewConfig}
           onScroll={Animated.event([{ nativeEvent: { contentOffset: { x: mathHorizontallScrollRef } } }], {
@@ -126,16 +132,16 @@ const MathOnboardingScreen = () => {
         }}
         style={{
           alignSelf: 'center',
-          alignItems: 'center',
+          position: 'absolute',
           borderColor: '#000',
           borderRadius: dimensions.width * 0.028,
           justifyContent: 'center',
           borderWidth: dimensions.width * 0.0028,
+          bottom: dimensions.height * 0.05,
           height: dimensions.height * 0.078,
           backgroundColor: '#FFE066',
           width: dimensions.width * 0.7,
-          position: 'absolute',
-          bottom: dimensions.height * 0.05,
+          alignItems: 'center',
         }}
       >
         <Text
@@ -146,7 +152,7 @@ const MathOnboardingScreen = () => {
             fontSize: dimensions.width * 0.08,
             textAlign: 'center',
           }}>
-          {thisNathIndexSlide >= chickenOnboardingImagesData.length - 1 ? 'Start Learning' : 'Next'}
+          {thisNathIndexSlide >= onbMathData.length - 1 ? 'Start Learning' : 'Next'}
         </Text>
       </TouchableOpacity>
     </SafeAreaView>

@@ -14,7 +14,7 @@ export const AudioProvider = ({ children }) => {
           setVolume(parseFloat(storedMathWithVolume));
         }
       } catch (error) {
-        console.log('Error loading the volume:', error);
+        console.log('Error loading the math volume:', error);
       }
     };
     loadMathStoredWithVolume();
@@ -23,9 +23,11 @@ export const AudioProvider = ({ children }) => {
   const handleChangeThisVolume = async (thisVolume) => {
     try {
       await AsyncStorage.setItem('volume', thisVolume.toString());
+
       setVolume(thisVolume);
+
     } catch (error) {
-      console.log('Error saving volume:', error);
+      console.log('Error saving math volume:', error);
     }
   };
 

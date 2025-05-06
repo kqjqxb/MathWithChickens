@@ -8,15 +8,14 @@ import {
   Text,
 } from 'react-native';
 
-import ChickenSettingsScreen from './ChickenSettingsScreen';
+import MathSettingsWithScreen from './MathSettingsWithScreen';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import ChickenSkinsScreen from './ChickenSkinsScreen';
-import ChickenQuizScreen from './ChickenQuizScreen';
-import ChickenRunGameScreen from './ChickenRunGameScreen';
+import MathQuizPage from './MathQuizPage';
 import Sound from 'react-native-sound';
 import { useAudio } from '../context/AudioContext';
 import MathCatchEggsScreen from './MathCatchEggsScreen';
+import MathAchievmentsScreen from './MathAchievmentsScreen';
 
 
 const fontRammetoOneRegular = 'RammettoOne-Regular';
@@ -178,15 +177,15 @@ const MathWithHomeScreen = () => {
 
         </SafeAreaView>
       ) : selectedMathWithScreen === 'Settings' ? (
-        <ChickenSettingsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} mathWithMusicEnabled={mathWithMusicEnabled} setMathWithMusicEnabled={setMathWithMusicEnabled}
+        <MathSettingsWithScreen setSelectedMathWithScreen={setSelectedMathWithScreen} mathWithMusicEnabled={mathWithMusicEnabled} setMathWithMusicEnabled={setMathWithMusicEnabled}
           vibroMathEnabled={vibroMathEnabled} setVibroMathEnabled={setVibroMathEnabled}
         />
-      ) : selectedMathWithScreen === 'Skins' ? (
-        <ChickenSkinsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />
+      ) : selectedMathWithScreen === 'Achievments' ? (
+        <MathAchievmentsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />
       ) : selectedMathWithScreen === 'Math Quiz' ? (
-        <ChickenQuizScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />
+        <MathQuizPage setSelectedMathWithScreen={setSelectedMathWithScreen} />
       ) : selectedMathWithScreen === 'Play Game' ? (
-        <MathCatchEggsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />
+        <MathCatchEggsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} vibroMathEnabled={vibroMathEnabled}/>
       ) : null}
     </View>
   );

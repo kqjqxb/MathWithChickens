@@ -8,40 +8,40 @@ import { loadUserData } from '../redux/userSlice';
 import { UserContext } from '../context/UserContext';
 import MathLoader from '../components/MathLoader';
 
-const ChickenRunLoadingScreen = () => {
+const LoadingMathApp = () => {
   const navigation = useNavigation();
   const { user, setUser } = useContext(UserContext);
   const dispatch = useDispatch();
   const dimensions = Dimensions.get('window');
 
-  const [isChickenOnbWasVisibledRunYet, setChickenOnbWasVisibledRunYet] = useState(false);
-  const [initializationChickenLoadingCompleted, setnitializationChickenLoadingCompleted] = useState(false);
+  const [isMathOnboardingWas, setMathOnboardingWas] = useState(false);
+  const [initMathLoadingDone, setInitMathLoadingDone] = useState(false);
 
   useEffect(() => {
-    const loadChickenUserRunner = async () => {
+    const loadMathUser = async () => {
       try {
         const deviceId = await DeviceInfo.getUniqueId();
         const storageKey = `currentUser_${deviceId}`;
-        const storedChickenUserRunner = await AsyncStorage.getItem(storageKey);
-        const isChickenOnbWasVisibledRun = await AsyncStorage.getItem('isChickenOnbWasVisibledRun');
+        const storedMathWithUser = await AsyncStorage.getItem(storageKey);
+        const isMathOnboardingVisibled = await AsyncStorage.getItem('isMathOnboardingVisibled');
 
-        if (storedChickenUserRunner) {
-          setUser(JSON.parse(storedChickenUserRunner));
-          setChickenOnbWasVisibledRunYet(false);
-        } else if (isChickenOnbWasVisibledRun) {
-          setChickenOnbWasVisibledRunYet(false);
+        if (storedMathWithUser) {
+          setUser(JSON.parse(storedMathWithUser));
+          setMathOnboardingWas(false);
+        } else if (isMathOnboardingVisibled) {
+          setMathOnboardingWas(false);
         } else {
-          setChickenOnbWasVisibledRunYet(true);
-          await AsyncStorage.setItem('isChickenOnbWasVisibledRun', 'true');
+          setMathOnboardingWas(true);
+          await AsyncStorage.setItem('isMathOnboardingVisibled', 'true');
         }
       } catch (error) {
-        console.error('Error loading of montYou Real user', error);
+        console.error('Loading math user has problem', error);
       } finally {
-        setnitializationChickenLoadingCompleted(true);
+        setInitMathLoadingDone(true);
       }
     };
 
-    loadChickenUserRunner();
+    loadMathUser();
   }, [setUser]);
 
   useEffect(() => {
@@ -49,30 +49,24 @@ const ChickenRunLoadingScreen = () => {
   }, [dispatch]);
 
   useEffect(() => {
-    if (initializationChickenLoadingCompleted) {
+    if (initMathLoadingDone) {
       const timer = setTimeout(() => {
-        const destination = isChickenOnbWasVisibledRunYet ? 'ChickenRunOnboardingScreen' : 'MathWithHomeScreen';
+        const destination = isMathOnboardingWas ? 'MathOnbPage' : 'MathWithHomeScreen';
         navigation.replace(destination);
       }, 3000);
       return () => clearTimeout(timer);
     }
-  }, [initializationChickenLoadingCompleted, isChickenOnbWasVisibledRunYet, navigation]);
+  }, [initMathLoadingDone, isMathOnboardingWas, navigation]);
 
   return (
     <View style={{
       alignItems: 'center',
       height: '100%',
-      alignSelf: 'center',
+      backgroundColor: '#86CBDD',
       justifyContent: 'center',
       width: '100%',
-      backgroundColor: '#86CBDD',
+      alignSelf: 'center',
     }}>
-      {/* <LinearGradient
-        style={{ position: 'absolute', left: 0, right: 0, top: 0, bottom: 0 }}
-        colors={['#F88700', '#FE1B2F']}
-        start={{ x: 1, y: 1 }}
-        end={{ x: 0, y: 0 }}
-      /> */}
       <Image
         source={require('../assets/images/mathLoadingImage.png')}
         style={{
@@ -88,4 +82,4 @@ const ChickenRunLoadingScreen = () => {
   );
 };
 
-export default ChickenRunLoadingScreen;
+export default LoadingMathApp;

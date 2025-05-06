@@ -13,11 +13,12 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import RNRestart from 'react-native-restart';
 
-const fontRammetoOneRegular = 'RammettoOne-Regular';
 const fontRanchersRegular = 'Ranchers-Regular';
 
-const ChickenSettingsScreen = ({ setSelectedMathWithScreen, mathWithMusicEnabled, setMathWithMusicEnabled, vibroMathEnabled, setVibroMathEnabled }) => {
-    const [dimensions, setDimensions] = useState(Dimensions.get('window'));
+const mathApp = 'https://google.com/';
+
+const MathSettingsWithScreen = ({ setSelectedMathWithScreen, mathWithMusicEnabled, setMathWithMusicEnabled, vibroMathEnabled, setVibroMathEnabled }) => {
+    const dimensions = Dimensions.get('window');
     const [volume, setVolume] = useState(0.5);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const styles = mathSettingsStyles(dimensions);
@@ -33,13 +34,13 @@ const ChickenSettingsScreen = ({ setSelectedMathWithScreen, mathWithMusicEnabled
             .catch(error => console.error('Error loading volumeValue from AsyncStorage:', error));
     }, []);
 
-    const clearAsyncStorage = async () => {
+    const clearMathAsyncStorage = async () => {
         try {
             await AsyncStorage.clear();
             RNRestart.Restart();
-            console.log('AsyncStorage очищено');
+            console.log('AsyncStorage cleaned');
         } catch (error) {
-            console.error('Помилка при очищенні AsyncStorage', error);
+            console.error('Cleaning AsyncStorage error: ', error);
         }
     };
 
@@ -125,6 +126,7 @@ const ChickenSettingsScreen = ({ setSelectedMathWithScreen, mathWithMusicEnabled
                             style={{
                                 width: dimensions.height * 0.06,
                                 height: dimensions.height * 0.06,
+                                left: !mathWithMusicEnabled ? dimensions.width * 0.02 : 0,
                             }}
                             resizeMode='contain'
                         />
@@ -150,7 +152,7 @@ const ChickenSettingsScreen = ({ setSelectedMathWithScreen, mathWithMusicEnabled
                 <TouchableOpacity
                     onPress={() => {
                         Share.share({
-                            message: 'You can upgrade your math skils with Math With Chickens!'
+                            message: `You can upgrade your math skils with chickens!\n${mathApp}`,
                         })
                             .then((result) => console.log(result))
                             .catch((error) => console.log('Error sharing:', error));
@@ -210,7 +212,7 @@ const ChickenSettingsScreen = ({ setSelectedMathWithScreen, mathWithMusicEnabled
                         <View style={[styles.flexRowStyles, { marginTop: dimensions.height * 0.03 }]}>
                             <TouchableOpacity
                                 onPress={() => {
-                                    clearAsyncStorage();
+                                    clearMathAsyncStorage();
                                     setIsModalVisible(false);
                                 }}
                                 style={[modalStyles.mathCancelConfirmButtons, {
@@ -289,4 +291,4 @@ const mathModalStyles = (dimensions) => StyleSheet.create({
     }
 });
 
-export default ChickenSettingsScreen;
+export default MathSettingsWithScreen;
