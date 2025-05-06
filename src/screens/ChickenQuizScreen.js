@@ -58,7 +58,7 @@ const roadMathEggLevels = [
 
 const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
     const [dimensions, setDimensions] = useState(Dimensions.get('window'));
-    const styles = createChickenQuizStyles(dimensions);
+    const styles = createMathQuizStyles(dimensions);
 
     const [mathQuizPreviewModalVisible, setMathQuizPreviewModalVisible] = useState(true);
     const [ownedMathQuizLevels, setOwnedMathQuizLevels] = useState([1]);
@@ -535,13 +535,7 @@ const ChickenQuizScreen = ({ setSelectedMathWithScreen, }) => {
     );
 };
 
-const createChickenQuizStyles = (dimensions) => StyleSheet.create({
-    chickenQuizAnswers: {
-        color: 'black',
-        fontSize: dimensions.width * 0.04,
-        fontFamily: fontKronaOneRegular,
-        textAlign: 'center',
-    },
+const createMathQuizStyles = (dimensions) => StyleSheet.create({
     ranchesTextStyles: {
         color: '#5C4033',
         textAlign: 'center',
@@ -576,7 +570,7 @@ const mathModalStyles = (dimensions) => StyleSheet.create({
         elevation: 5,
     },
     mathCancelConfirmButtons: {
-        width: dimensions.width * 0.3,
+        width: '80%',
         height: dimensions.height * 0.08,
         borderRadius: dimensions.width * 0.03,
         borderWidth: dimensions.width * 0.003,

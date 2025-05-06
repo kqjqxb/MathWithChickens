@@ -16,6 +16,7 @@ import ChickenQuizScreen from './ChickenQuizScreen';
 import ChickenRunGameScreen from './ChickenRunGameScreen';
 import Sound from 'react-native-sound';
 import { useAudio } from '../context/AudioContext';
+import MathCatchEggsScreen from './MathCatchEggsScreen';
 
 
 const fontRammetoOneRegular = 'RammettoOne-Regular';
@@ -184,8 +185,8 @@ const MathWithHomeScreen = () => {
         <ChickenSkinsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />
       ) : selectedMathWithScreen === 'Math Quiz' ? (
         <ChickenQuizScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />
-      ) : selectedMathWithScreen === 'Play' ? (
-        <ChickenRunGameScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />
+      ) : selectedMathWithScreen === 'Play Game' ? (
+        <MathCatchEggsScreen setSelectedMathWithScreen={setSelectedMathWithScreen} />
       ) : null}
     </View>
   );
