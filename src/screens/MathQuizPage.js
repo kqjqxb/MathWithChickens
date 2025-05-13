@@ -171,6 +171,9 @@ const MathQuizPage = ({ setSelectedMathWithScreen, }) => {
                         }}
                             key={index}
                             onPress={() => {
+                                setLevelPressed(true);
+
+
                                 setSelectedMathQuizLevel(eggLevel.id);
                                 setMathQuizWithStarted(true);
                                 setCurMathQuizWithQuestionInd(0);
