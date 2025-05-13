@@ -10,9 +10,9 @@ workflows:
         XCODE_WORKSPACE: "MathWithChickens.xcworkspace" # <----
         XCODE_SCHEME: "MathWithChickens" # <----
         BUNDLE_ID: "com.math.with.chickens.app" # <----
-        APP_STORE_APP_ID: 6744814642 # <----
-        APP_STORE_CONNECT_KEY_ID: "8V44MH2N9J" # <----
-        APP_STORE_CONNECT_ISSUER_ID: "688d23bb-82ec-4eb5-b127-9ad880f997ef" # <----
+        APP_STORE_APP_ID: 6745818714 # <----
+        APP_STORE_CONNECT_KEY_ID: "PH3FRR5UH5" # <----
+        APP_STORE_CONNECT_ISSUER_ID: "f58c700c-91a0-45d3-8afd-bd509a6d8725" # <----
         node: latest
         xcode: latest
         cocoapods: default
@@ -52,7 +52,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - thorstendreker083@gmail.com       # <----
+          - dorieboscohs951@gmail.com       # <----
         notify:
           success: true
           failure: false
