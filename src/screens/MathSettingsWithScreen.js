@@ -88,9 +88,9 @@ const MathSettingsWithScreen = ({ setSelectedMathWithScreen, mathWithMusicEnable
                             const newValue = !vibroMathEnabled;
                             setVibroMathEnabled(newValue);
                             try {
-                                await AsyncStorage.setItem('chickenVibroEnabled', newValue.toString());
+                                await AsyncStorage.setItem('mathWithBibroEnabled', newValue.toString());
                             } catch (error) {
-                                console.error('Error updating chickenVibroEnabled in AsyncStorage:', error);
+                                console.error('Error updating mathWithBibroEnabled in AsyncStorage:', error);
                             }
                         }}>
                         <Image

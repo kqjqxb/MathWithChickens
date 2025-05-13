@@ -103,7 +103,7 @@ const MathWithHomeScreen = () => {
       try {
         const storedMathMusicIs = await AsyncStorage.getItem('mathWithMusicEnabled');
 
-        const storedMathVibrationIs = await AsyncStorage.getItem('chickenVibroEnabled');
+        const storedMathVibrationIs = await AsyncStorage.getItem('mathWithBibroEnabled');
 
         if (storedMathMusicIs !== null) {
           setMathWithMusicEnabled(JSON.parse(storedMathMusicIs));
